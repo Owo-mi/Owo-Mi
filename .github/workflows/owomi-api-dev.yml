@@ -1,0 +1,32 @@
+name: Owo Mi Dev API Workflow
+
+on:
+  push:
+    branches:
+      - development-mvp
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        cd owomi/app
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run pylint
+      run: |
+        cd owomi/app
+        pylint --disable=R,C *.py
+    - name: Run tests
+      run: |
+        #test commands
