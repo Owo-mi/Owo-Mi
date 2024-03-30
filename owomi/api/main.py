@@ -1,8 +1,8 @@
-from fastapi import FastAPI 
+from fastapi import FastAPI, Request, HTTPException 
 from db import Base, engine, SessionLocal
 from pydantic import BaseModel
 from typing import List, Annotated
-from models import User, Transaction, Xp, withdrawalRequest, Savings
+from models import User, Savings, Circle, Category
 
 
 app = FastAPI()

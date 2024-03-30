@@ -3,26 +3,22 @@ from typing import List
 import datetime
 
 class UserBase(BaseModel):
-    email: str
     username: str
-    password: str
+    wallet_address: str
+
+
+class UserResponse(UserBase):
+    id: int
 
     class Config:
          orm_mode: True
 
 class WalletBase(BaseModel):
      wallet_address: List[str]
-     email: str
      network: List[str]
 
      class Config:
          orm_mode: True
-
-class XpBase(BaseModel):
-     user_id: str
-     amount: int
-     current_Balance: int
-     status: str
 
 
 class CategoryBase(BaseModel):
@@ -41,7 +37,27 @@ class SavingsCreate(BaseModel):
     created_date:datetime.datetime
 
 
-    
+class CircleCreate(BaseModel):
+     title: str
+     description: str | None = None
+     initial_balance: int
+     target: int
+     initial_count: int
+     target: int
+     created_at: datetime.datetime
+     completed_at: datetime.datetime
+
+
+class CircleBase(CircleCreate):
+     circle_id: int
+     current_balance: int
+     user_count: int
+     created_at: datetime.datetime
+     completed_at: datetime.datetime
+
+     class Config:
+         orm_mode: True
+
      
 
 
