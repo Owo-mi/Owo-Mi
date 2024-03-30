@@ -40,7 +40,7 @@ pub struct Savings {
 pub enum SavingsKind {
     Flexible,
     Fixed { maturity_date: u64 },
-    Target { amount: u64, date: u64 },
+    Target { amount: u64, maturity_date: u64 },
 }
 
 #[derive(Clone, AnchorSerialize, AnchorDeserialize)]
