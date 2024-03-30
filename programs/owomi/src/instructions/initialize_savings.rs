@@ -4,7 +4,7 @@ use anchor_spl::token::{Mint, Token, TokenAccount};
 use crate::state::{OwomiAccount, Savings, SavingsKind, SavingsStatus, seeds, TokenReserve};
 
 pub fn initialize_savings(
-    ctx: Context<InitializeTokenBalance>,
+    ctx: Context<InitializeSavings>,
     args: InitializeSavingsArgs,
 ) -> Result<()> {
     let savings = &mut ctx.accounts.savings;
@@ -33,7 +33,7 @@ pub struct InitializeSavingsArgs {
 
 #[derive(Accounts)]
 #[instruction(args: InitializeSavingsArgs)]
-pub struct InitializeTokenBalance<'info> {
+pub struct InitializeSavings<'info> {
     pub mint: Account<'info, Mint>,
     pub authority: Signer<'info>,
     #[account(

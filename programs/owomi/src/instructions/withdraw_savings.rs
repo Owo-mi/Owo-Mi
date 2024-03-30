@@ -3,7 +3,7 @@ use anchor_spl::token::{Mint, Token, TokenAccount, transfer, Transfer};
 
 use crate::state::{OwomiAccount, Savings, SavingsKind, SavingsStatus, seeds, TokenReserve};
 
-pub fn withdraw_savings(ctx: Context<WithdrawTokenBalance>, index: u64) -> Result<()> {
+pub fn withdraw_savings(ctx: Context<WithdrawSavings>, index: u64) -> Result<()> {
     let savings = &mut ctx.accounts.savings;
     let current_date = Clock::get()?.unix_timestamp as u64;
 
@@ -40,25 +40,29 @@ pub fn withdraw_savings(ctx: Context<WithdrawTokenBalance>, index: u64) -> Resul
 
     savings.status = SavingsStatus::Closed;
 
-    if (penalty > 0) {
+    if penalty > 0 {
         // transfer penalty fee to our own treasury
     }
 
-    let cpi = CpiContext::new_with_signer(
-        ctx.accounts.token_program.to_account_info(),
-        Transfer {
-            to: ctx.accounts.signer.to_account_info(),
-            from: ctx.accounts.vault.to_account_info(),
-            authority: ctx.accounts.account.to_account_info(),
-        },
-        &[&[
-            seeds::SEED_PREFIX,
-            seeds::SEED_ACCOUNT,
-            ctx.accounts.signer.key().as_ref(),
-        ]],
-    );
+    let to = ctx.accounts.signer.clone();
+    let from = &ctx.accounts.vault;
 
-    transfer(cpi, withdrawal)?;
+    transfer(
+        CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            Transfer {
+                to: to.to_account_info(),
+                from: from.to_account_info(),
+                authority: ctx.accounts.account.to_account_info(),
+            },
+            &[&[
+                seeds::SEED_PREFIX,
+                seeds::SEED_ACCOUNT,
+                ctx.accounts.signer.key.as_ref(),
+            ]],
+        ),
+        withdrawal,
+    )?;
 
     Ok(())
 }
@@ -71,7 +75,7 @@ pub struct WithdrawSavingsArgs {
 
 #[derive(Accounts)]
 #[instruction(index: u64)]
-pub struct WithdrawTokenBalance<'info> {
+pub struct WithdrawSavings<'info> {
     pub mint: Account<'info, Mint>,
     pub signer: Signer<'info>,
     #[account(

@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_lang::prelude::borsh::{BorshDeserialize, BorshSerialize};
 
 pub mod seeds;
 

@@ -1,10 +1,22 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{Mint, Token, TokenAccount};
+use anchor_spl::token::{Mint, Token, TokenAccount, transfer, Transfer};
 
 use crate::state::{OwomiAccount, Savings, seeds, TokenReserve};
 
-pub fn topup_savings(ctx: Context<TopupTokenBalance>, args: TopupSavingsArgs) -> Result<()> {
+pub fn topup_savings(ctx: Context<TopupSavings>, args: TopupSavingsArgs) -> Result<()> {
     let savings = &mut ctx.accounts.savings;
+
+    transfer(
+        CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            Transfer {
+                to: ctx.accounts.vault.to_account_info(),
+                from: ctx.accounts.signer.to_account_info(),
+                authority: ctx.accounts.account.to_account_info(),
+            },
+        ),
+        args.amount,
+    )?;
 
     let balance = savings.balance.checked_add(args.amount).unwrap();
     savings.balance = balance;
@@ -20,7 +32,7 @@ pub struct TopupSavingsArgs {
 
 #[derive(Accounts)]
 #[instruction(args: TopupSavingsArgs)]
-pub struct TopupTokenBalance<'info> {
+pub struct TopupSavings<'info> {
     pub mint: Account<'info, Mint>,
     pub signer: Signer<'info>,
     #[account(

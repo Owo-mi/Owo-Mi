@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
-use crate::state::{seeds, OwomiAccount, TokenReserve};
+use crate::state::{OwomiAccount, seeds, TokenReserve};
 
-pub fn initialize_token_reserve(ctx: Context<InitializeTokenBalance>) -> Result<()> {
+pub fn initialize_token_reserve(ctx: Context<InitializeTokenReserve>) -> Result<()> {
     let reserve = &mut ctx.accounts.reserve;
 
     reserve.bump = ctx.bumps.reserve;
@@ -17,7 +17,7 @@ pub fn initialize_token_reserve(ctx: Context<InitializeTokenBalance>) -> Result<
 }
 
 #[derive(Accounts)]
-pub struct InitializeTokenBalance<'info> {
+pub struct InitializeTokenReserve<'info> {
     pub mint: Account<'info, Mint>,
     pub authority: Signer<'info>,
     #[account(
