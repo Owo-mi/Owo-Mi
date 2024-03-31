@@ -26,4 +26,3 @@ async def get_program_client():
 async def message():
     return {"message": "Owo Mi!!!"}
 
-
