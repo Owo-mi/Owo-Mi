@@ -5,13 +5,21 @@ import datetime
 class UserBase(BaseModel):
     username: str
     wallet_address: str
+    pin: int
 
-
+class UserPinAuthentication(BaseModel):
+    username: str 
+    pin: int
+    
 class UserResponse(UserBase):
     id: int
 
     class Config:
          orm_mode: True
+         
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
 
 class WalletBase(BaseModel):
      wallet_address: List[str]
@@ -22,7 +30,7 @@ class WalletBase(BaseModel):
 
 
 class CategoryBase(BaseModel):
-     category_name = List[str]
+    category_name: List[str]
 
 
 class SavingsBase(BaseModel):
