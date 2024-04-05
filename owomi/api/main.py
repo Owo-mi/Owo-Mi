@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException, Depends, Header, status, Body
 from db import Base, engine, SessionLocal
-from anchor_client import create_program_client
 from pydantic import BaseModel
 from typing import List, Annotated, Optional
 from model import User, Savings, Circle, Category
@@ -24,17 +23,6 @@ DEV_OAUTH_PATH = config('DEV_OAUTH_KEY')
 with open(DEV_OAUTH_PATH, "rb") as f:
     DEV_OAUTH_KEY = f.read()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-async def get_program_client():
-    program = await create_program_client()
-    return program
 
 # in-routes functions(should be moved to another file for neatness)
 # create owomi account
