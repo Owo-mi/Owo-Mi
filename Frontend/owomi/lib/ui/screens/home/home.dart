@@ -13,50 +13,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget customAppBar() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+      margin: const EdgeInsets.fromLTRB(20, 20, 20, 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                height: 50,
-                margin: const EdgeInsets.only(right: 10),
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
-                    image: AssetImage('assets/images/avatars/animoji.png'),
-                    fit: BoxFit.fill,
-                  ),
-                  borderRadius: BorderRadius.circular(15.0),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 0,
-                      spreadRadius: -3.0,
-                      offset: Offset(5, 7),
-                    ),
-                  ],
-                ),
-                child: Image.asset('assets/images/avatars/animoji.png'),
+          Container(
+            height: 50,
+            margin: const EdgeInsets.only(right: 10),
+            decoration: BoxDecoration(
+              image: const DecorationImage(
+                image: AssetImage('assets/images/avatars/animoji.png'),
+                fit: BoxFit.fill,
               ),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        '095309039043',
-                      ),
-                      Icon(Icons.copy_outlined),
-                    ],
-                  ),
-                  Text('#jjbbdjsb')
-                ],
-              ),
-            ],
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: Image.asset('assets/images/avatars/animoji.png'),
           ),
-          const Icon(Icons.notifications_active)
+          const Icon(Icons.list_alt_rounded)
         ],
       ),
     );
@@ -184,17 +157,6 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: ListView(
                 children: [
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('Wallet Connected'),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    child: const Text('Your journey so far'),
-                  ),
                   balances(),
                   Row(
                     children: [
@@ -207,46 +169,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   SizedBox(
                     height: 70,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(left: 10.0, right: 30.0),
+                    child: Row(
                       children: [
-                        Center(
-                          child: Container(
-                            width: 100,
-                            height: 45,
-                            constraints: const BoxConstraints(maxHeight: 50.0),
-                            margin:
-                                const EdgeInsets.only(left: 5.0, right: 5.0),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(15.0),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black,
-                                  blurRadius: 0,
-                                  spreadRadius: -2.0,
-                                  offset: Offset(5, 8),
-                                ),
-                              ],
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(5.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(Icons.plus_one),
-                                  Column(
-                                    children: [
-                                      Text('30.60'),
-                                      Text('sol'),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.send),
+                          tooltip: 'Send',
                         ),
                       ],
                     ),

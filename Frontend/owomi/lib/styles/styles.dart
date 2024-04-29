@@ -1,7 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'dart:ui';
-
 import 'package:owomi/common_libs.dart';
 
 export 'colors.dart';
@@ -221,4 +219,4 @@ class AppStyle {
 //         offset: Offset(0, 4),
 //         blurRadius: 6),
 //   ];
-}
+// }
