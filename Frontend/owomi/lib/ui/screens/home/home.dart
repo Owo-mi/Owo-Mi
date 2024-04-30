@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget balances() {
     return SizedBox(
-      height: 200,
+      height: 150,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(left: 10.0, right: 30.0),
@@ -45,39 +45,61 @@ class _HomeScreenState extends State<HomeScreen> {
           Center(
             child: Container(
               width: 350,
-              height: 150,
+              height: 110,
               constraints: const BoxConstraints(maxHeight: 150.0),
               margin: const EdgeInsets.only(left: 10.0, right: 20.0),
               decoration: BoxDecoration(
                 color: Colors.green,
                 borderRadius: BorderRadius.circular(15.0),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 0,
-                    spreadRadius: 2.0,
-                    offset: Offset(8, 12),
-                  ),
-                ],
               ),
-              child: const Padding(
-                padding: EdgeInsets.all(5.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 10, 7, 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.plus_one),
-                        Text('Quick Save'),
+                        Container(
+                          constraints:
+                              BoxConstraints.tight(const Size(100, 30)),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.plus_one),
+                              Text('Quick Save'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        SizedBox(
+                          height: 20,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Total Savings'),
+                              IconButton(
+                                padding: const EdgeInsets.all(0),
+                                onPressed: () {},
+                                icon: const Icon(Icons.remove_red_eye),
+                                iconSize: 17,
+                              )
+                            ],
+                          ),
+                        ),
+                        const Text(
+                          '15,000 sol',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Text('Total Savings'),
-                    Text('15,000 sol'),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -90,14 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: BoxDecoration(
                 color: Colors.yellow,
                 borderRadius: BorderRadius.circular(15.0),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 0,
-                    spreadRadius: 2.0,
-                    offset: Offset(8, 12),
-                  ),
-                ],
               ),
               child: const Padding(
                 padding: EdgeInsets.all(5.0),
@@ -158,159 +172,104 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListView(
                 children: [
                   balances(),
-                  Row(
-                    children: [
-                      const Text('Use Auto save mode'),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('Customize'),
-                      )
-                    ],
-                  ),
                   SizedBox(
-                    height: 70,
+                    height: 90,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.send),
-                          tooltip: 'Send',
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      const Text('Reach your goal!🔥'),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('Make more'),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 150,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(left: 10.0, right: 30.0),
-                      children: [
-                        Center(
-                          child: Container(
-                            width: 150,
-                            height: 100,
-                            constraints: const BoxConstraints(maxHeight: 150.0),
-                            margin:
-                                const EdgeInsets.only(left: 5.0, right: 5.0),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(15.0),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black,
-                                  blurRadius: 0,
-                                  spreadRadius: -2.0,
-                                  offset: Offset(5, 8),
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                children: [
-                                  const Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('Goal:'),
-                                      Text('30.60'),
-                                      Icon(Icons.info),
-                                    ],
-                                  ),
-                                  Text('$_progressValue'),
-                                  SizedBox(
-                                    height: 10.0,
-                                    width: 40.0,
-                                    child: LinearProgressIndicator(
-                                      value: _progressValue,
-                                      backgroundColor: Colors.white,
-                                      valueColor:
-                                          const AlwaysStoppedAnimation<Color>(
-                                              Colors.blue),
+                        // Send Button
+                        Column(
+                          children: [
+                            SizedBox.fromSize(
+                              size: const Size(40, 40),
+                              child: ClipOval(
+                                child: Material(
+                                  color: Colors.grey,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.send,
+                                      color: Colors.black,
                                     ),
+                                    onPressed: () {},
                                   ),
-                                  const Text('15 Sol')
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      const Text('Your partners in earning'),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('See circle'),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 150,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(left: 10.0, right: 30.0),
-                      children: [
-                        Center(
-                          child: Container(
-                            width: 150,
-                            height: 100,
-                            constraints: const BoxConstraints(maxHeight: 150.0),
-                            margin:
-                                const EdgeInsets.only(left: 5.0, right: 5.0),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(15.0),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black,
-                                  blurRadius: 0,
-                                  spreadRadius: -2.0,
-                                  offset: Offset(5, 8),
-                                ),
-                              ],
+                            const SizedBox(
+                              height: 7,
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                children: [
-                                  const Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('Goal:'),
-                                      Text('30.60'),
-                                      Icon(Icons.info),
-                                    ],
-                                  ),
-                                  Text('$_progressValue'),
-                                  SizedBox(
-                                    height: 10.0,
-                                    width: 40.0,
-                                    child: LinearProgressIndicator(
-                                      value: _progressValue,
-                                      backgroundColor: Colors.white,
-                                      valueColor:
-                                          const AlwaysStoppedAnimation<Color>(
-                                              Colors.blue),
+                            const Text('Save')
+                          ],
+                        ),
+                        // Quick save button
+                        Column(
+                          children: [
+                            SizedBox.fromSize(
+                              size: const Size(40, 40),
+                              child: ClipOval(
+                                child: Material(
+                                  color: Colors.grey,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.download,
+                                      color: Colors.black,
                                     ),
+                                    onPressed: () {},
                                   ),
-                                  const Text('15 Sol')
-                                ],
+                                ),
                               ),
                             ),
-                          ),
+                            const SizedBox(
+                              height: 7,
+                            ),
+                            const Text('Withdraw')
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            SizedBox.fromSize(
+                              size: const Size(40, 40),
+                              child: ClipOval(
+                                child: Material(
+                                  color: Colors.grey,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.send,
+                                      color: Colors.black,
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 7,
+                            ),
+                            const Text('Receive')
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            SizedBox.fromSize(
+                              size: const Size(40, 40),
+                              child: ClipOval(
+                                child: Material(
+                                  color: Colors.grey,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.send,
+                                      color: Colors.black,
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 7,
+                            ),
+                            const Text('Invest')
+                          ],
                         ),
                       ],
                     ),
