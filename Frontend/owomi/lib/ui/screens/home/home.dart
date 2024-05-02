@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:owomi/common_libs.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -142,28 +141,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            label: 'Home',
-            icon: Icon(
-              Icons.home,
-            ),
-          ),
-          BottomNavigationBarItem(
-            label: 'Savings',
-            icon: Icon(
-              Icons.chat,
-            ),
-          ),
-          BottomNavigationBarItem(
-            label: 'Portfolio',
-            icon: Icon(
-              Icons.bar_chart_rounded,
-            ),
-          ),
-        ],
-      ),
       body: SafeArea(
         child: Column(
           children: [
