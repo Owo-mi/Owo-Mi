@@ -21,10 +21,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Center(
-          child: LogoScreen(),
+        Expanded(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: LogoScreen(),
+          ),
         ),
+        Expanded(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: ElevatedButton(
+                style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.green),
+                ),
+                child: const Text(
+                  'Get Started',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () => context.go('/scafold'),
+              ),
+            ),
+          ),
+        )
       ],
     );
   }
