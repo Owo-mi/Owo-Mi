@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:owomi/ui/screens/home/home.dart';
 import 'package:owomi/ui/screens/onboarding/onboarding/onboarding.dart';
+import 'package:owomi/ui/screens/scafold/scafold.dart';
 
 /// Shared paths / urls used across the app
 class ScreenPaths {
   // static String splash = '/';
   static String onboarding = '/';
   // static String onboarding = '/welcome';
-  static String home = '/home';
-  static String settings = '/settings';
+  static String scafold = '/scafold';
+  // static String settings = '/settings';
 }
 
 final appRouter = GoRouter(
@@ -22,7 +22,8 @@ final appRouter = GoRouter(
       //     (_) => Container(
       //           color: Colors.purple,
       //         )),
-      AppRoute(ScreenPaths.home, (s) => const HomeScreen())
+      AppRoute(ScreenPaths.scafold, (s) => const Scafold()),
+      // AppRoute(ScreenPaths.home, (s) => const SettingsScreen())
     ]);
 
 class AppRoute extends GoRoute {
