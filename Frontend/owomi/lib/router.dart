@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:owomi/ui/screens/onboarding/onboarding/onboarding.dart';
+import 'package:owomi/ui/screens/onboarding/onboarding.dart';
 import 'package:owomi/ui/screens/scafold/scafold.dart';
 
 /// Shared paths / urls used across the app
