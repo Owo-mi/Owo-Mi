@@ -8,9 +8,14 @@ datasource db {
 }
 
 model User {
-  id             Int     @id @default(autoincrement())
-  sub            String? @unique
-  salt           String?
-  hashedPassword String?
-  xp             Int?
+  id             String @db.Uuid    @id @default(uuid())
+  sub            String @unique
+  email          String @unique
+  provider        Provider @default(Google)
+  salt           String
+  address        String
+}
+
+enum Provider {
+  Google 
 }
