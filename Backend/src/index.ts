@@ -14,6 +14,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const BASE_PATH = process.env.BASE_PATH || '/api';
 
+app.use("/health", (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.use(BASE_PATH, async (req: Request, res: Response) => {
   res.status(200).json({
     message: 'Hello World'
