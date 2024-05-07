@@ -21,7 +21,8 @@ router.get('/testing', async (req, res) => {
 
 router.post('/signIn',  verifyToken, subExist, async (req, res) => {
     try {
-        const { sub, email, address, salt} = req.body.payload; // Expect user data
+        const { sub, salt} = req.body.payload; // Expect user data
+        const { email, address } = req.body
         // Validate user data (e.g., ensure sub and hashedPassword are present)
         // Encrypt Salt
         const hashedSalt = await encrypt(salt);
