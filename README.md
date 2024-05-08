@@ -9,4 +9,4 @@
 
 3.  Run ```npm run devStart``` to start server.
 
-4. Directory ```dir: Backend/src``` run this `npx prisma db push --schema=config/prisma/schema.prisma` to update/push state to the database. 
+4. Directory ```dir: Backend/src``` run this `npx prisma db push` to update/push state to the database. 
