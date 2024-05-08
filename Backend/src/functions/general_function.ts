@@ -3,7 +3,6 @@ import "dotenv/config";
 
 const key = process.env.ENCRYPTION_KEY || '';
 
-console.log(key);
 
 export const encrypt = async (salt: string) => {
     const saltWordArray = CryptoJS.enc.Utf8.parse(salt);

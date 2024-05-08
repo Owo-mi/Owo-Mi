@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/prisma/Prismaclient';
 import { JwtPayload, jwtDecode} from "jwt-decode";
+import {TokenExpiredError} from "jsonwebtoken";
 import "dotenv/config";
-
-const key = process.env.ENCRYPTION_KEY || '';
 
 /*
 A middleware that checks if sub exists in database
@@ -42,19 +41,21 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
     
         const token = authHeader.split(' ')[1];
 
+        if (!token) {
+            return res.status(403).send("A token is required");
+        }
+        
         const decodedJwt = jwtDecode(token) as JwtPayload;
-
         console.log(JSON.stringify(decodedJwt, null, 2));
-
-       req.body.payload = decodedJwt;
+        req.body.payload = decodedJwt;
 
        return next()
     } catch (error) {
 
         console.error(error);
 
-        // Handle different error types (e.g., token expiration)
-        if (error === 'TokenExpiredError') {
+
+        if(error instanceof TokenExpiredError) {
           return res.status(401).json({ message: 'Token expired' });
         }
     
