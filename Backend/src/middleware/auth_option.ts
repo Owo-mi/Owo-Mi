@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/prisma/Prismaclient';
-import { JwtPayload} from "jwt-decode";
-import { verify } from "jsonwebtoken"
+import { JwtPayload, jwtDecode} from "jwt-decode";
 import "dotenv/config";
 
 const key = process.env.ENCRYPTION_KEY || '';
@@ -43,7 +42,9 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
     
         const token = authHeader.split(' ')[1];
 
-        const decodedJwt = verify(token, key)as JwtPayload;
+        const decodedJwt = jwtDecode(token) as JwtPayload;
+
+        console.log(JSON.stringify(decodedJwt, null, 2));
 
        req.body.payload = decodedJwt;
 

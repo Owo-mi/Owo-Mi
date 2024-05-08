@@ -18,7 +18,7 @@ app.use("/health", (req, res) => {
   res.status(200).send('OK');
 });
 
-app.use(BASE_PATH, async (req: Request, res: Response) => {
+app.get(BASE_PATH, async (req: Request, res: Response) => {
   res.status(200).json({
     message: 'Hello World'
   });
