@@ -1,6 +1,8 @@
 // import 'package:onboarding/onboarding.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/material.dart';
 import 'package:owomi/common_libs.dart';
+import 'package:sui/sui.dart';
+import 'package:zklogin/zklogin.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -9,50 +11,67 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-Widget LogoScreen() {
-  return SvgPicture.asset(
-    'assets/images/logo/logo.svg',
-    semanticsLabel: 'Owomi Logo',
-    width: 200,
-  );
-}
-
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  final controller = ScrollController();
+  final suiClient = SuiClient(SuiUrls.devnet);
+
+  printAcc() async {
+    final account = SuiAccount(Ed25519Keypair());
+    final randomness = generateRandomness();
+
+    final epoch = await suiClient.getLatestSuiSystemState();
+    final epochInt = int.parse(epoch.epoch);
+    print(epochInt);
+    final nonce =
+        generateNonce(account.keyPair.getPublicKey(), epochInt, randomness);
+    print('-----------------------------');
+    print(nonce);
+    print(account);
+    print(randomness);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   var width = MediaQuery.of(context).size.width;
+  //   return ChangeNotifierProvider()
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Expanded(
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: LogoScreen(),
+    var width = MediaQuery.of(context).size.width;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Sui zkLogin Dart Demo')),
+      body: SingleChildScrollView(
+        controller: controller,
+        child: Container(
+          margin: EdgeInsets.symmetric(
+            vertical: width < 600 ? 20 : 40,
+            horizontal: width < 600 ? 15 : 30,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // GoogleSignInPage()
+              const Text('hi'),
+              ElevatedButton(
+                onPressed: () async {
+                  await printAcc();
+                },
+                child: const Text('yoo'),
+              )
+            ],
           ),
         ),
-        Expanded(
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: ElevatedButton(
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.green),
-                ),
-                child: const Text(
-                  'Get Started',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                onPressed: () => context.go('/scafold'),
-              ),
-            ),
-          ),
-        )
-      ],
+      ),
     );
   }
 }
+
 // Onboarding(
 //       pages: [
 //         PageModel(
