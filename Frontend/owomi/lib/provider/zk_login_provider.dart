@@ -41,12 +41,8 @@ final nonceProvider = StateProvider<String>((ref) {
 
 final googleUrlProvider = StateProvider<String>((ref) {
   final nonce = ref.watch(nonceProvider);
-  final jwt = ref.watch(jwtProvider);
-  return 'https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?'
-      'client_id=${Constant.googleClientId}&response_type=id_token'
-      '&redirect_uri=${kIsWeb ? Uri.encodeComponent(Constant.redirectUrl) : Constant.redirectUrl}&scope=openid&nonce=$nonce'
-      '&service=lso&o2v=2&theme=mn&ddm=0&flowName=GeneralOAuthFlow'
-      '&id_token=$jwt}';
+  // final jwt = ref.watch(jwtProvider);
+  return 'https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=${Constant.googleClientId}&response_type=id_token&redirect_uri=${kIsWeb ? Uri.encodeComponent(Constant.redirectUrl) : Constant.redirectUrl}&scope=openid&nonce=$nonce&service=lso&o2v=2&theme=mn&ddm=0&flowName=GeneralOAuthFlow';
 });
 
 @riverpod
