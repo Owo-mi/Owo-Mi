@@ -48,6 +48,7 @@ dependencies:
   another_flushbar: ^1.12.30
   shared_preferences: ^2.2.3
   flutter_inappwebview: ^6.0.0
+  backdrop: ^0.9.1
 
 dev_dependencies:
   flutter_test:
