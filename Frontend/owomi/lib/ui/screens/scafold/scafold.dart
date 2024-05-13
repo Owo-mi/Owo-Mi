@@ -14,7 +14,7 @@ class _ScafoldState extends State<Scafold> {
 
   PageController pageController = PageController(
     initialPage: 0,
-    keepPage: true,
+    keepPage: false,
   );
 
   pageChanged(index) {
@@ -29,6 +29,7 @@ class _ScafoldState extends State<Scafold> {
       onPageChanged: (index) {
         pageChanged(index);
       },
+      physics: const NeverScrollableScrollPhysics(),
       children: const [HomeScreen(), SettingsScreen()],
     );
   }
