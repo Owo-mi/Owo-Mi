@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:owomi/ui/screens/onboarding/onboarding.dart';
+import 'package:owomi/ui/screens/onboarding/first_step.dart';
 import 'package:owomi/ui/screens/scafold/scafold.dart';
 
 /// Shared paths / urls used across the app
 class ScreenPaths {
   // static String splash = '/';
   static String onboarding = '/';
+  static String first_step = '/';
   // static String onboarding = '/welcome';
   static String scafold = '/scafold';
   // static String settings = '/settings';
@@ -16,7 +17,8 @@ class ScreenPaths {
 final appRouter = GoRouter(
     // redirect: _handleRedirect,
     routes: [
-      AppRoute(ScreenPaths.onboarding, (s) => const OnboardingScreen()),
+      AppRoute(ScreenPaths.first_step, (s) => const FirstStepOnboarding()),
+      // AppRoute(ScreenPaths.onboarding, (s) => const OnboardingScreen()),
       // AppRoute(
       //     ScreenPaths.splash,
       //     (_) => Container(
