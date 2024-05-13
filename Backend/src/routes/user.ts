@@ -1,6 +1,8 @@
 import { Router } from "express"
 import { prisma } from "../config/prisma/Prismaclient"
-import { encrypt, decrypt } from "../functions/aes";
+import { encrypt, decrypt } from "../functions/general_function";
+import { RequestWithUserRole } from "../types/types";
+import { Response } from "express";
 
 import { subExist, verifyToken } from '../middleware/auth_option';
 
@@ -19,26 +21,28 @@ router.get('/testing', async (req, res) => {
 
 
 
-router.post('/signIn',  verifyToken, subExist, async (req, res) => {
+router.post('/signIn',  verifyToken, subExist, async (req: RequestWithUserRole, res: Response) => {
     try {
-        const { sub, salt} = req.body.payload; // Expect user data
-        const { email, address } = req.body
-        // Validate user data (e.g., ensure sub and hashedPassword are present)
-        // Encrypt Salt
-        const hashedSalt = await encrypt(salt);
-        // Create a new user with Prisma, storing the combined hash
-        const user = await prisma.user.create({
-            data: {
-                sub: sub,
-                address: address,
-                salt: hashedSalt.toString(), // Store the hashed salt (for potential future use)
-                email: email
-            },
-        });
-        if (!user) {
+        if (req.user) {
+            const {sub, email}  = req.user
+            const { address, salt} = req.body;
+    
+            // Validate user data (e.g., ensure sub and hashedPassword are present)
+            // Encrypt Salt
+            const hashedSalt = await encrypt(salt);
+            // Create a new user with Prisma, storing the combined hash
+            const user = await prisma.user.create({
+                data: {
+                    sub: sub,
+                    address: address,
+                    salt: hashedSalt, // Store the hashed salt (for potential future use)
+                    email: email
+                },
+            });
+            res.json({ message: 'User Signed In' })
+        }else {
             return res.status(400).json({ message: 'User creation failed' });
         }
-        res.json({ message: 'User Signed In' });
 
     } catch (error) {
         console.log(error)
@@ -47,9 +51,9 @@ router.post('/signIn',  verifyToken, subExist, async (req, res) => {
 } )
 
 
-router.get('/salt', verifyToken, async (req, res) => {
+router.get('/salt', verifyToken, async (req: RequestWithUserRole, res: Response) => {
     try {
-        const { sub } = req.body.payload;
+        const  sub = req.user?.sub?? ''
         // Fetch user data from database using Prisma
         const user = await prisma.user.findUnique({
           where: { sub: sub },
@@ -58,7 +62,7 @@ router.get('/salt', verifyToken, async (req, res) => {
         if (!user) {
           return res.status(404).json({ message: 'User not found' });
         }
-        const decrypted = user.salt;
+        const decrypted = decrypt(user.salt);
         res.status(200).json({salt: decrypted});
     
     } catch (error) {
