@@ -1,7 +1,5 @@
 // import 'package:onboarding/onboarding.dart';
-import 'package:flutter/material.dart';
 import 'package:owomi/common_libs.dart';
-import 'package:owomi/ui/screens/onboarding/first_step.dart';
 import 'package:sui/sui.dart';
 import 'package:zklogin/zklogin.dart';
 
@@ -31,9 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     print(account);
     print(randomness);
 
-    setState(() {
-      googleFlow = true;
-    });
+    context.go('/googlesignin');
   }
 
   @override
@@ -59,19 +55,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             vertical: width < 600 ? 20 : 40,
             horizontal: width < 600 ? 15 : 30,
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // GoogleSignInPage()
-              // const Text('hi'),
-              // ElevatedButton(
-              //   onPressed: () async {
-              //     await printAcc();
-              //   },
-              //   child: const Text('yoo'),
-              // ),
+              const Text('hi'),
+              ElevatedButton(
+                onPressed: () async {
+                  await printAcc();
+                },
+                child: const Text('yoo'),
+              ),
               // googleFlow ? const GoogleSignInPage() : Container()
-              FirstStepOnboarding()
+              // FirstStepOnboarding()
             ],
           ),
         ),
