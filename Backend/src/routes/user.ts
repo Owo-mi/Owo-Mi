@@ -26,7 +26,7 @@ router.get('/testing', async (req, res) => {
  * @body {string} - Users Address
  * @body {string} req.body.email - Users Email
  * @body {string} req.body.salt - Users Salt
- * @returns {status} - A successful status Registratiorn, returns 200 and a JSON object with a success message
+ * @returns {status} - A successful status upon Registratiorn, returns 200 and a JSON object with a success message
  * @throws {Error} - If there are errors User Creation fails, returns 400 with an error message
  */
 router.post('/resgitration',  verifyToken, subExist, async (req: Request, res: Response) => {

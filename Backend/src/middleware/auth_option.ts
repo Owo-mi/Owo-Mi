@@ -49,10 +49,8 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
         audience: process.env.CLIENT_ID,
       });
       const payload = ticket.getPayload() as TokenPayload;
-      console.log("The payload: ", JSON.stringify(payload, null, 2));
       if (payload) {
         req.body.payload = payload;
-      console.log(req.body.payload);
       next();  
     }
     } catch (error) {
