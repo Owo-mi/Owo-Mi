@@ -1,6 +1,5 @@
 import CryptoJS = require('crypto-js'); // Use require syntax for CryptoJS
 import "dotenv/config";
-
 const key = process.env.ENCRYPTION_KEY || '';
 
 

@@ -1,17 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/prisma/Prismaclient';
-import { JwtPayload, jwtDecode} from "jwt-decode";
 import {TokenExpiredError} from "jsonwebtoken";
+//import { JwtPayload, jwtDecode } from 'jwt-decode';
+//import { verify } from '../functions/general_function';
+import { OAuth2Client, TokenPayload } from 'google-auth-library';
 import "dotenv/config";
-import { RequestWithUserRole, IdeCode } from '../types/types';
 /*
 A middleware that checks if sub exists in database
 *
 *
 *@return {status} - A successful status if the sub does not exist. Else returns unsuccessful if sub does exist
 */
-export const subExist = async (req: RequestWithUserRole, res: Response, next: NextFunction) =>  {
-    const  sub  = req.user?.sub;
+export const subExist = async (req: Request, res: Response, next: NextFunction) =>  {
+    const  { sub }  = req.body.payload;
 
     try {
         const existingUser = await prisma.user.findUnique({
@@ -31,37 +32,34 @@ export const subExist = async (req: RequestWithUserRole, res: Response, next: Ne
     }
 }
 
-export const verifyToken = (secret: string) => async (req: Request&{user:IdeCode}, res: Response, next: NextFunction) => {
+const client = new OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET);
+
+export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader?.startsWith('Bearer ')) {
-          return res.status(401).json({ message: 'Unauthorized' });
-        }
-    
-        const token = authHeader.split(' ')[1];
-
-        
-        if (!token) {
-            return res.status(403).send("A token is required");
-        }
-        
-        const decodedJwt = jwtDecode(token) as JwtPayload;
-        console.log(JSON.stringify(decodedJwt, null, 2));
-
-        req.user = decodedJwt;
-        console.log(req.user)
-
-       return next()
-    } catch (error) {
-
-        console.error(error);
-
-
-        if(error instanceof TokenExpiredError) {
-          return res.status(401).json({ message: 'Token expired' });
-        }
-    
-        return res.status(403).json({ message: 'Forbidden' }); // Or another appropriate error code
+      const authHeader = req.headers.authorization;
+      if (!authHeader?.startsWith('Bearer ')) {
+        return res.status(401).json({ message: 'Unauthorized' });
       }
-    
-}
+      const token = authHeader.split(' ')[1];
+      if (!token) {
+        return res.status(403).send("A token is required");
+      }
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.CLIENT_ID,
+      });
+      const payload = ticket.getPayload() as TokenPayload;
+      console.log("The payload: ", JSON.stringify(payload, null, 2));
+      if (payload) {
+        req.body.payload = payload;
+      console.log(req.body.payload);
+      next();  
+    }
+    } catch (error) {
+      console.error(error);
+      if (error instanceof TokenExpiredError) {
+        return res.status(401).json({ message: 'Token expired' });
+      }
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+  };

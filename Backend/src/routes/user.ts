@@ -1,8 +1,7 @@
 import { Router } from "express"
 import { prisma } from "../config/prisma/Prismaclient"
 import { encrypt, decrypt } from "../functions/general_function";
-import { RequestWithUserRole } from "../types/types";
-import { Response } from "express";
+import { Request, Response } from "express";
 
 import { subExist, verifyToken } from '../middleware/auth_option';
 
@@ -19,13 +18,22 @@ router.get('/testing', async (req, res) => {
 });
 
 
-
-
-router.post('/signIn',  verifyToken, subExist, async (req: RequestWithUserRole, res: Response) => {
+/**
+ * Changes a users password from old to new
+ *
+ * @route POST /users/registration
+ * @header {IdToken} - the user's id token
+ * @body {string} - Users Address
+ * @body {string} req.body.email - Users Email
+ * @body {string} req.body.salt - Users Salt
+ * @returns {status} - A successful status Registratiorn, returns 200 and a JSON object with a success message
+ * @throws {Error} - If there are errors User Creation fails, returns 400 with an error message
+ */
+router.post('/resgitration',  verifyToken, subExist, async (req: Request, res: Response) => {
     try {
-        if (req.user) {
-            const {sub, email}  = req.user
-            const { address, salt} = req.body;
+        if (req.body.payload) {
+            const {sub}  = req.body.payload;
+            const { address, salt, email} = req.body;
     
             // Validate user data (e.g., ensure sub and hashedPassword are present)
             // Encrypt Salt
@@ -35,11 +43,11 @@ router.post('/signIn',  verifyToken, subExist, async (req: RequestWithUserRole, 
                 data: {
                     sub: sub,
                     address: address,
-                    salt: hashedSalt, // Store the hashed salt (for potential future use)
+                    salt: hashedSalt,
                     email: email
                 },
             });
-            res.json({ message: 'User Signed In' })
+            res.status(200).json({ message: 'User Signed In' })
         }else {
             return res.status(400).json({ message: 'User creation failed' });
         }
@@ -51,9 +59,17 @@ router.post('/signIn',  verifyToken, subExist, async (req: RequestWithUserRole, 
 } )
 
 
-router.get('/salt', verifyToken, async (req: RequestWithUserRole, res: Response) => {
+/**
+ * Changes a users password from old to new
+ *
+ * @route GET /users/salt
+ * @header {IdToken} - the user's id token
+ * @returns {status} - A successful status returns 200 and a JSON object containing decrypted Salt of th user
+ * @throws {Error} - If there are errors User Creation fails, returns 400 with an error message
+ */
+router.get('/salt', verifyToken, async (req: Request, res: Response) => {
     try {
-        const  sub = req.user?.sub?? ''
+        const  {sub} = req.body.payload
         // Fetch user data from database using Prisma
         const user = await prisma.user.findUnique({
           where: { sub: sub },
