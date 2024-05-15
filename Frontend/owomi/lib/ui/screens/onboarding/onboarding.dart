@@ -1,36 +1,22 @@
 // import 'package:onboarding/onboarding.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
+import 'package:owomi/data/storage_manager.dart';
+import 'package:owomi/logic/zklogin.dart';
+import 'package:owomi/provider/zk_login_provider.dart';
 import 'package:sui/sui.dart';
-import 'package:zklogin/zklogin.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final controller = ScrollController();
   final suiClient = SuiClient(SuiUrls.devnet);
   var googleFlow = false;
-
-  printAcc() async {
-    final account = SuiAccount(Ed25519Keypair());
-    final randomness = generateRandomness();
-
-    final epoch = await suiClient.getLatestSuiSystemState();
-    final epochInt = int.parse(epoch.epoch);
-    print(epochInt);
-    final nonce =
-        generateNonce(account.keyPair.getPublicKey(), epochInt, randomness);
-    print('-----------------------------');
-    print(nonce);
-    print(account);
-    print(randomness);
-
-    context.go('/googlesignin');
-  }
 
   @override
   void initState() {
@@ -46,6 +32,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
+    ZkLoginStorageManager.clear();
+    var googleSignIn = ref.watch(googleSignInCompleteProvider);
+    if (googleSignIn) {
+      Zklogin().initiate(ref);
+    }
     return Scaffold(
       appBar: AppBar(title: const Text('Sui zkLogin Dart Demo')),
       body: SingleChildScrollView(
@@ -61,8 +52,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               // GoogleSignInPage()
               const Text('hi'),
               ElevatedButton(
-                onPressed: () async {
-                  await printAcc();
+                onPressed: () {
+                  context.go('/googlesignin');
                 },
                 child: const Text('yoo'),
               ),

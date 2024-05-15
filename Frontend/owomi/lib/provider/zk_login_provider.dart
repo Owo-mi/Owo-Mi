@@ -14,33 +14,66 @@ import 'package:zklogin/zklogin.dart';
 
 final suiClient = SuiClient(SuiUrls.devnet);
 
-final suiAccountProvider = StateProvider<SuiAccount>((ref) {
-  return SuiAccount(Ed25519Keypair());
+final suiAccountProvider = Provider<SuiAccount>((ref) {
+  var keypair = ZkLoginStorageManager.getTemporaryCacheKeyPair();
+  if (keypair == '') {
+    keypair = SuiAccount(Ed25519Keypair()).privateKeyHex();
+    ZkLoginStorageManager.setTemporaryCacheKeyPair(keypair);
+  }
+  var account = SuiAccount.fromPrivateKey(keypair, SignatureScheme.Ed25519);
+  return account;
 });
-final randomnessProvider = StateProvider<String>((ref) {
+
+final extendedEphemiralPubKeyProvider = Provider<String>((ref) {
+  return getExtendedEphemeralPublicKey(
+      ref.watch(suiAccountProvider).keyPair.getPublicKey());
+});
+
+final randomnessProvider = Provider<String>((ref) {
+  var randomness = ZkLoginStorageManager.getTemporaryRandomness();
+  if (randomness == '') {
+    randomness = generateRandomness();
+    ZkLoginStorageManager.setTemporaryRandomness(randomness);
+  }
+  return randomness;
+});
+
+final saltProvider = Provider<String>((ref) {
   return generateRandomness();
 });
 
 final jwtProvider = StateProvider<String>((ref) {
-  var jwt = '';
-  return jwt;
+  return '';
+});
+
+final googleSignInCompleteProvider = StateProvider<bool>((ref) {
+  return false;
 });
 
 final epochProvider = FutureProvider<int>((ref) async {
-  final epoch = await suiClient.getLatestSuiSystemState();
-  return int.parse(epoch.epoch);
+  var epoch = ZkLoginStorageManager.getTemporaryMaxEpoch();
+  if (epoch == 0) {
+    var raw = await suiClient.getLatestSuiSystemState();
+    epoch = int.parse(raw.epoch);
+    ZkLoginStorageManager.setTemporaryMaxEpoch(epoch);
+  }
+  return epoch;
 });
 
-final nonceProvider = StateProvider<String>((ref) {
-  final account = ref.watch(suiAccountProvider);
-  final epoch = ref.watch(epochProvider);
-  final randomness = ref.watch(randomnessProvider);
-  return generateNonce(
-      account.keyPair.getPublicKey(), epoch.value ?? 74, randomness);
+final nonceProvider = FutureProvider<String>((ref) async {
+  var nonce = ZkLoginStorageManager.getTemporaryCacheNonce();
+  if (nonce == '') {
+    final account = ref.read(suiAccountProvider);
+    final epoch = await ref.read(epochProvider.future);
+    final randomness = ref.read(randomnessProvider);
+    nonce = generateNonce(account.keyPair.getPublicKey(), epoch, randomness);
+    ZkLoginStorageManager.setTemporaryCacheNonce(nonce);
+  }
+  return nonce;
 });
 
-final googleUrlProvider = StateProvider<String>((ref) {
-  final nonce = ref.watch(nonceProvider);
+final googleUrlProvider = FutureProvider<String>((ref) async {
+  final nonce = await ref.read(nonceProvider.future);
   // final jwt = ref.watch(jwtProvider);
   return 'https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=${Constant.googleClientId}&response_type=id_token&redirect_uri=${Constant.redirectUrl}&scope=openid&nonce=$nonce&service=lso&o2v=2&theme=mn&ddm=0&flowName=GeneralOAuthFlow&id_token=%7D';
 });
