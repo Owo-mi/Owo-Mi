@@ -1,16 +1,24 @@
 import 'dart:convert';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:owomi/common_libs.dart';
 import 'package:owomi/provider/zk_login_provider.dart';
 import 'package:sui/sui.dart';
+import 'package:sui/types/faucet.dart';
 import 'package:zklogin/zklogin.dart';
 
 class Zklogin {
   final suiClient = SuiClient(SuiUrls.devnet);
 
-  initiate(WidgetRef ref) async {
+  initiate(WidgetRef ref, context) async {
     var signInComplete = ref.watch(googleSignInCompleteProvider);
+    // Future.delayed(const Duration(seconds: 3), );
+    Future(() {
+      ref.read(zkloginInitializeRunningProvider.notifier).state = true;
+    });
+
     final account = ref.read(suiAccountProvider);
     final randomness = ref.read(randomnessProvider);
 
@@ -31,6 +39,7 @@ class Zklogin {
     var jwt = ref.watch(jwtProvider);
     var salt = ref.read(saltProvider);
     var extendedEphemeralPublicKey = ref.read(extendedEphemiralPubKeyProvider);
+    var balance = ref.watch(addressBalanceProvider);
     print('Signin Complete check');
     print(signInComplete);
     print('Jwt');
@@ -39,6 +48,8 @@ class Zklogin {
     print(salt);
     print('extendedEphemiralKey');
     print(extendedEphemeralPublicKey);
+    print('balance');
+    print(balance);
     if (signInComplete) {
       if (jwt != '') {
         Map decodedJwt = decodeJwt(jwt);
@@ -47,6 +58,10 @@ class Zklogin {
         var address = jwtToAddress(jwt, BigInt.parse(salt));
         print('Address');
         print(address);
+        var requestedBalance =
+            await requestFaucet(context, ref, address, balance);
+        print(requestedBalance);
+        print(balance);
         var proof = await getZkProof(
             jwt, extendedEphemeralPublicKey, epoch, randomness, salt);
         print('Proof');
@@ -56,8 +71,46 @@ class Zklogin {
             account, address, salt, jwt, proof, epoch);
         print('Block');
         print(block);
+        ref.read(zkloginInitializeRunningProvider.notifier).state = false;
+        ref.read(zkloginCompleteProvider.notifier).state = true;
       }
     }
+  }
+
+  Future<BigInt> requestFaucet(context, WidgetRef ref, address, balance) async {
+    var emptyReturn = BigInt.from(0);
+    var requesting = ref.watch(makingNetworkRequestProvider);
+    if (requesting) return emptyReturn;
+    var resp = await suiClient.getBalance(address);
+    balance = resp.totalBalance;
+    if (balance! <= BigInt.zero) {
+      requesting = true;
+      try {
+        final faucet = FaucetClient(SuiUrls.faucetDev);
+        final faucetResp = await faucet.requestSuiFromFaucetV1(address);
+        if (faucetResp.task != null) {
+          while (true) {
+            final statusResp =
+                await faucet.getFaucetRequestStatus(faucetResp.task!);
+            if (statusResp.status.status == BatchSendStatus.SUCCEEDED) {
+              break;
+            } else {
+              await Future.delayed(const Duration(seconds: 3));
+            }
+          }
+        }
+      } catch (e) {
+        if (context.mounted) {
+          showSnackBar(context, e.toString());
+        }
+      } finally {
+        requesting = false;
+      }
+    }
+
+    resp = await suiClient.getBalance(address);
+    ref.read(addressBalanceProvider.notifier).state = resp.totalBalance;
+    return resp.totalBalance;
   }
 
   getZkProof(
@@ -138,6 +191,14 @@ class Zklogin {
     );
 
     return resp.digest;
+  }
+
+  void showSnackBar(BuildContext context, String title, {int seconds = 3}) {
+    Flushbar(
+      icon: const Icon(Icons.info_outline),
+      message: title,
+      duration: Duration(seconds: seconds),
+    ).show(context);
   }
 
   initiateLogin() async {
