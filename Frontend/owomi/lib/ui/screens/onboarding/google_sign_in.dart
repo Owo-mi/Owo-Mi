@@ -62,7 +62,9 @@ class _GoogleSignInPageState extends ConsumerState<GoogleSignInPage> {
           },
         ),
       AsyncError() => throw UnimplementedError(),
-      _ => const CircularProgressIndicator(),
+      _ => const Center(
+          child: CircularProgressIndicator(),
+        ),
     };
   }
 }
