@@ -73,6 +73,7 @@ class Zklogin {
         print(block);
         ref.read(zkloginInitializeRunningProvider.notifier).state = false;
         ref.read(zkloginCompleteProvider.notifier).state = true;
+        ref.read(onboardingStepsProvider.notifier).state = 3;
       }
     }
   }
