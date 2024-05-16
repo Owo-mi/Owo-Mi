@@ -46,6 +46,14 @@ final jwtProvider = StateProvider<String>((ref) {
   return '';
 });
 
+final onboardingStepsProvider = StateProvider<int>((ref) {
+  return 1;
+});
+
+final onboardingCompleteProvider = StateProvider<bool>((ref) {
+  return ZkLoginStorageManager.getOnboardingComplete();
+});
+
 final googleSignInCompleteProvider = StateProvider<bool>((ref) {
   return false;
 });
