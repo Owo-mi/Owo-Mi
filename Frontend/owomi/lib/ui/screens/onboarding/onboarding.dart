@@ -1,7 +1,6 @@
 // import 'package:onboarding/onboarding.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
-import 'package:owomi/data/storage_manager.dart';
 import 'package:owomi/logic/zklogin.dart';
 import 'package:owomi/provider/zk_login_provider.dart';
 import 'package:sui/sui.dart';
@@ -29,14 +28,30 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   //   return ChangeNotifierProvider()
   // }
 
+  Widget redirect(BuildContext context) {
+    Future(() {
+      Zklogin().showSnackBar(context, 'Redirecting');
+      context.go('/scafold');
+    });
+    return const Center(
+      child: CircularProgressIndicator.adaptive(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    ZkLoginStorageManager.clear();
     var googleSignIn = ref.watch(googleSignInCompleteProvider);
-    if (googleSignIn) {
-      Zklogin().initiate(ref);
+    var zkloginRunning = ref.watch(zkloginInitializeRunningProvider);
+    var zkloginComplete = ref.watch(zkloginCompleteProvider);
+    if (!zkloginComplete) {
+      if (!zkloginRunning) {
+        if (googleSignIn) {
+          Zklogin().initiate(ref, context);
+        }
+      }
     }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Sui zkLogin Dart Demo')),
       body: SingleChildScrollView(
@@ -50,6 +65,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // GoogleSignInPage()
+              zkloginComplete ? redirect(context) : Container(),
               const Text('hi'),
               ElevatedButton(
                 onPressed: () {
