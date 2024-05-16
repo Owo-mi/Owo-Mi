@@ -16,6 +16,8 @@ class ZkLoginStorageManager {
 
   static const String temporaryCacheMaxEpoch = "_temporary_cache_max_epoch";
 
+  static const String onboardingComplete = "_onboarding_complete";
+
   static init() async {
     _sharedPreferences = await SharedPreferences.getInstance();
   }
@@ -56,6 +58,13 @@ class ZkLoginStorageManager {
 
   static int getTemporaryMaxEpoch() =>
       _sharedPreferences.getInt(temporaryCacheMaxEpoch) ?? 0;
+
+  static Future<bool> setOnboardingComplete(bool value) async {
+    return await _sharedPreferences.setBool(temporaryCacheMaxEpoch, value);
+  }
+
+  static bool getOnboardingComplete() =>
+      _sharedPreferences.getBool(temporaryCacheMaxEpoch) ?? false;
 
   static String location() {
     if (kIsWeb) return 'LocalStorage';
