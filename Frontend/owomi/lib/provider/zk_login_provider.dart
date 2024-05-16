@@ -49,6 +49,22 @@ final jwtProvider = StateProvider<String>((ref) {
 final googleSignInCompleteProvider = StateProvider<bool>((ref) {
   return false;
 });
+final zkloginInitializeRunningProvider = StateProvider<bool>((ref) {
+  return false;
+});
+
+final zkloginCompleteProvider = StateProvider<bool>((ref) {
+  return false;
+});
+
+final addressBalanceProvider = StateProvider<BigInt>((ref) {
+  var big = BigInt.from(0);
+  return big;
+});
+
+final makingNetworkRequestProvider = StateProvider<bool>((ref) {
+  return false;
+});
 
 final epochProvider = FutureProvider<int>((ref) async {
   var epoch = ZkLoginStorageManager.getTemporaryMaxEpoch();
