@@ -38,11 +38,11 @@ class Zklogin {
 
         await requestFaucet(context, ref, address, balance);
 
-        var proof = await getZkProof(
-            jwt, extendedEphemeralPublicKey, epoch, randomness, salt, context);
+        var proof = await getZkProof(jwt, extendedEphemeralPublicKey, epoch,
+            randomness, salt, context, ref);
 
         await executeTransactionBlock(
-            account, address, salt, jwt, proof, epoch);
+            account, address, salt, jwt, proof, epoch, ref);
         ref.read(zkloginInitializeRunningProvider.notifier).state = false;
         ref.read(zkloginCompleteProvider.notifier).state = true;
         ref.read(onboardingStepsProvider.notifier).state = 3;
@@ -51,6 +51,10 @@ class Zklogin {
   }
 
   Future<BigInt> requestFaucet(context, WidgetRef ref, address, balance) async {
+    Future(() {
+      ref.read(zkloginProcessStatusProvider.notifier).state =
+          'Requesting gas from faucet';
+    });
     var emptyReturn = BigInt.from(0);
     var requesting = ref.watch(makingNetworkRequestProvider);
     if (requesting) return emptyReturn;
@@ -87,7 +91,11 @@ class Zklogin {
   }
 
   getZkProof(jwt, extendedEphemeralPublicKey, maxEpoch, randomness, salt,
-      context) async {
+      context, ref) async {
+    Future(() {
+      ref.read(zkloginProcessStatusProvider.notifier).state =
+          'Proofing the transaction';
+    });
     final body = {
       "jwt": jwt,
       "extendedEphemeralPublicKey": extendedEphemeralPublicKey,
@@ -123,13 +131,11 @@ class Zklogin {
   // Fund wallet with some sui to gas the transactions
 
   executeTransactionBlock(
-    account,
-    address,
-    salt,
-    jwt,
-    zkProof,
-    maxEpoch,
-  ) async {
+      account, address, salt, jwt, zkProof, maxEpoch, ref) async {
+    Future(() {
+      ref.read(zkloginProcessStatusProvider.notifier).state =
+          'Executing Transaction Block';
+    });
     final txb = TransactionBlock();
     txb.setSenderIfNotSet(address);
     final coin = txb.splitCoins(txb.gas, [txb.pureInt(22222)]);
