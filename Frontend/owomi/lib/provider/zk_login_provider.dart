@@ -41,6 +41,9 @@ final randomnessProvider = Provider<String>((ref) {
 final saltProvider = Provider<String>((ref) {
   return generateRandomness();
 });
+final zkloginProcessStatusProvider = StateProvider<String>((ref) {
+  return '';
+});
 
 final jwtProvider = StateProvider<String>((ref) {
   return '';
