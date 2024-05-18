@@ -18,6 +18,10 @@ class ZkLoginStorageManager {
 
   static const String onboardingComplete = "_onboarding_complete";
 
+  static const String userPin = "_user_pin";
+
+  static const String biometricsEnabled = "_biometrics_enabled";
+
   static init() async {
     _sharedPreferences = await SharedPreferences.getInstance();
   }
@@ -60,11 +64,24 @@ class ZkLoginStorageManager {
       _sharedPreferences.getInt(temporaryCacheMaxEpoch) ?? 0;
 
   static Future<bool> setOnboardingComplete(bool value) async {
-    return await _sharedPreferences.setBool(temporaryCacheMaxEpoch, value);
+    return await _sharedPreferences.setBool(onboardingComplete, value);
   }
 
   static bool getOnboardingComplete() =>
-      _sharedPreferences.getBool(temporaryCacheMaxEpoch) ?? false;
+      _sharedPreferences.getBool(onboardingComplete) ?? false;
+
+  static Future<bool> setUserPin(String value) async {
+    return await _sharedPreferences.setString(userPin, value);
+  }
+
+  static String getUserPin() => _sharedPreferences.getString(userPin) ?? '';
+
+  static Future<bool> setBiometricsEnabled(String value) async {
+    return await _sharedPreferences.setString(biometricsEnabled, value);
+  }
+
+  static String getBiometricsEnabled() =>
+      _sharedPreferences.getString(biometricsEnabled) ?? '';
 
   static String location() {
     if (kIsWeb) return 'LocalStorage';
