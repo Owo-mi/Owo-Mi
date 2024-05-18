@@ -24,53 +24,25 @@ class Zklogin {
 
     final epoch = await ref.read(epochProvider.future);
     final nonce = ref.read(nonceProvider);
-    print('-----------------------------');
-    print('Nonce');
-    print(nonce);
-    print('Account');
-    print(account);
-    print('Randomness');
-    print(randomness);
-    print('Epoch');
-    print(epoch);
-    // if (!signInComplete) {
-    //   context.go('/googlesignin');
-    // }
+
     var jwt = ref.watch(jwtProvider);
     var salt = ref.read(saltProvider);
     var extendedEphemeralPublicKey = ref.read(extendedEphemiralPubKeyProvider);
     var balance = ref.watch(addressBalanceProvider);
-    print('Signin Complete check');
-    print(signInComplete);
-    print('Jwt');
-    print(jwt);
-    print('salt');
-    print(salt);
-    print('extendedEphemiralKey');
-    print(extendedEphemeralPublicKey);
-    print('balance');
-    print(balance);
+
     if (signInComplete) {
       if (jwt != '') {
-        Map decodedJwt = decodeJwt(jwt);
-        print('Decoded Jwt');
-        print(decodedJwt);
-        var address = jwtToAddress(jwt, BigInt.parse(salt));
-        print('Address');
-        print(address);
-        var requestedBalance =
-            await requestFaucet(context, ref, address, balance);
-        print(requestedBalance);
-        print(balance);
-        var proof = await getZkProof(
-            jwt, extendedEphemeralPublicKey, epoch, randomness, salt);
-        print('Proof');
-        print(proof);
+        // Map decodedJwt = decodeJwt(jwt);
 
-        var block = await executeTransactionBlock(
+        var address = jwtToAddress(jwt, BigInt.parse(salt));
+
+        await requestFaucet(context, ref, address, balance);
+
+        var proof = await getZkProof(
+            jwt, extendedEphemeralPublicKey, epoch, randomness, salt, context);
+
+        await executeTransactionBlock(
             account, address, salt, jwt, proof, epoch);
-        print('Block');
-        print(block);
         ref.read(zkloginInitializeRunningProvider.notifier).state = false;
         ref.read(zkloginCompleteProvider.notifier).state = true;
         ref.read(onboardingStepsProvider.notifier).state = 3;
@@ -114,8 +86,8 @@ class Zklogin {
     return resp.totalBalance;
   }
 
-  getZkProof(
-      jwt, extendedEphemeralPublicKey, maxEpoch, randomness, salt) async {
+  getZkProof(jwt, extendedEphemeralPublicKey, maxEpoch, randomness, salt,
+      context) async {
     final body = {
       "jwt": jwt,
       "extendedEphemeralPublicKey": extendedEphemeralPublicKey,
@@ -134,12 +106,11 @@ class Zklogin {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response?.data);
-        print(e.response?.headers);
-        print(e.response?.requestOptions);
+        Zklogin().showSnackBar(context, 'Error');
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.requestOptions);
+        Zklogin().showSnackBar(context, 'Error');
+
         print(e.message);
       }
     }
@@ -159,7 +130,6 @@ class Zklogin {
     zkProof,
     maxEpoch,
   ) async {
-    final suiClient = SuiClient(SuiUrls.devnet);
     final txb = TransactionBlock();
     txb.setSenderIfNotSet(address);
     final coin = txb.splitCoins(txb.gas, [txb.pureInt(22222)]);
