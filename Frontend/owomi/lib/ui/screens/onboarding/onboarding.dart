@@ -86,7 +86,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget redirect(BuildContext context) {
     Future(() {
-      Zklogin().showSnackBar(context, 'Redirecting');
+      // Zklogin().showSnackBar(context, 'Redirecting');
       context.go('/scafold');
     });
     return const Center(
