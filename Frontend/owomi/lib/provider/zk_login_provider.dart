@@ -102,7 +102,7 @@ final nonceProvider = FutureProvider<String>((ref) async {
 final googleUrlProvider = FutureProvider<String>((ref) async {
   final nonce = await ref.read(nonceProvider.future);
   // final jwt = ref.watch(jwtProvider);
-  return 'https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=${Constant.googleClientId}&response_type=id_token&redirect_uri=${Constant.redirectUrl}&scope=openid&nonce=$nonce&service=lso&o2v=2&theme=mn&ddm=0&flowName=GeneralOAuthFlow&id_token=%7D';
+  return 'https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=${Constant.googleClientId}&response_type=id_token&redirect_uri=${Constant.redirectUrl}&scope=openid+email&nonce=$nonce&service=lso&o2v=2&theme=mn&ddm=0&flowName=GeneralOAuthFlow&id_token=%7D';
 });
 
 @riverpod
