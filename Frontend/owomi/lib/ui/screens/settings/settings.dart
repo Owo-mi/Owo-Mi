@@ -108,7 +108,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
   }
 
   savePin() {
-    ZkLoginStorageManager.setUserPin(enteredPin);
+    StorageManager.setUserPin(enteredPin);
     Zklogin().showSnackBar(context, 'Pin Saved');
   }
 

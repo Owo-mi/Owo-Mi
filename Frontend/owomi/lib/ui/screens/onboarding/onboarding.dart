@@ -35,7 +35,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   finishOnboarding() {
-    ZkLoginStorageManager.setOnboardingComplete(true);
+    StorageManager.setOnboardingComplete(true);
     Zklogin().showSnackBar(context, 'Onboarding Complete');
     context.go('/scafold');
   }
@@ -245,7 +245,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   savePin() {
-    ZkLoginStorageManager.setUserPin(enteredPin);
+    StorageManager.setUserPin(enteredPin);
     Zklogin().showSnackBar(context, 'Pin Saved');
     ref.read(onboardingStepsProvider.notifier).state = 4;
   }

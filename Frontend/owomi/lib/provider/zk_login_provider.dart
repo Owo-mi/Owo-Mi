@@ -15,10 +15,10 @@ import 'package:zklogin/zklogin.dart';
 final suiClient = SuiClient(SuiUrls.devnet);
 
 final suiAccountProvider = Provider<SuiAccount>((ref) {
-  var keypair = ZkLoginStorageManager.getTemporaryCacheKeyPair();
+  var keypair = StorageManager.getTemporaryCacheKeyPair();
   if (keypair == '') {
     keypair = SuiAccount(Ed25519Keypair()).privateKeyHex();
-    ZkLoginStorageManager.setTemporaryCacheKeyPair(keypair);
+    StorageManager.setTemporaryCacheKeyPair(keypair);
   }
   var account = SuiAccount.fromPrivateKey(keypair, SignatureScheme.Ed25519);
   return account;
@@ -30,10 +30,10 @@ final extendedEphemiralPubKeyProvider = Provider<String>((ref) {
 });
 
 final randomnessProvider = Provider<String>((ref) {
-  var randomness = ZkLoginStorageManager.getTemporaryRandomness();
+  var randomness = StorageManager.getTemporaryRandomness();
   if (randomness == '') {
     randomness = generateRandomness();
-    ZkLoginStorageManager.setTemporaryRandomness(randomness);
+    StorageManager.setTemporaryRandomness(randomness);
   }
   return randomness;
 });
@@ -54,7 +54,7 @@ final onboardingStepsProvider = StateProvider<int>((ref) {
 });
 
 final onboardingCompleteProvider = StateProvider<bool>((ref) {
-  return ZkLoginStorageManager.getOnboardingComplete();
+  return StorageManager.getOnboardingComplete();
 });
 
 final googleSignInCompleteProvider = StateProvider<bool>((ref) {
@@ -78,23 +78,23 @@ final makingNetworkRequestProvider = StateProvider<bool>((ref) {
 });
 
 final epochProvider = FutureProvider<int>((ref) async {
-  var epoch = ZkLoginStorageManager.getTemporaryMaxEpoch();
+  var epoch = StorageManager.getTemporaryMaxEpoch();
   if (epoch == 0) {
     var raw = await suiClient.getLatestSuiSystemState();
     epoch = int.parse(raw.epoch);
-    ZkLoginStorageManager.setTemporaryMaxEpoch(epoch);
+    StorageManager.setTemporaryMaxEpoch(epoch);
   }
   return epoch;
 });
 
 final nonceProvider = FutureProvider<String>((ref) async {
-  var nonce = ZkLoginStorageManager.getTemporaryCacheNonce();
+  var nonce = StorageManager.getTemporaryCacheNonce();
   if (nonce == '') {
     final account = ref.read(suiAccountProvider);
     final epoch = await ref.read(epochProvider.future);
     final randomness = ref.read(randomnessProvider);
     nonce = generateNonce(account.keyPair.getPublicKey(), epoch, randomness);
-    ZkLoginStorageManager.setTemporaryCacheNonce(nonce);
+    StorageManager.setTemporaryCacheNonce(nonce);
   }
   return nonce;
 });
@@ -113,14 +113,14 @@ class ZkLoginProvider {
 
   SuiAccount? get account {
     if (_account != null) return _account;
-    final privKey = ZkLoginStorageManager.getTemporaryCacheKeyPair();
+    final privKey = StorageManager.getTemporaryCacheKeyPair();
     if (privKey.isEmpty) return null;
     return SuiAccount.fromPrivateKey(privKey, SignatureScheme.Ed25519);
   }
 
   set account(SuiAccount? value) {
     _account = value;
-    ZkLoginStorageManager.setTemporaryCacheKeyPair(
+    StorageManager.setTemporaryCacheKeyPair(
       value?.privateKeyHex() ?? '',
     );
   }
@@ -139,7 +139,7 @@ class ZkLoginProvider {
 
   set maxEpoch(int value) {
     _maxEpoch = value;
-    ZkLoginStorageManager.setTemporaryMaxEpoch(value);
+    StorageManager.setTemporaryMaxEpoch(value);
   }
 
   String _randomness = '';
@@ -148,7 +148,7 @@ class ZkLoginProvider {
 
   set randomness(String value) {
     _randomness = value;
-    ZkLoginStorageManager.setTemporaryRandomness(value);
+    StorageManager.setTemporaryRandomness(value);
   }
 
   String _nonce = '';
@@ -157,7 +157,7 @@ class ZkLoginProvider {
 
   set nonce(String value) {
     _nonce = value;
-    ZkLoginStorageManager.setTemporaryCacheNonce(nonce);
+    StorageManager.setTemporaryCacheNonce(nonce);
   }
 
   String _salt = '';

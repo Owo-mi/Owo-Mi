@@ -32,7 +32,7 @@ class Zklogin {
 
     if (signInComplete) {
       if (jwt != '') {
-        ZkLoginStorageManager.setJwt(jwt);
+        StorageManager.setJwt(jwt);
         var address = jwtToAddress(jwt, BigInt.parse(salt));
 
         // Map decodedJwt = decodeJwt(jwt);

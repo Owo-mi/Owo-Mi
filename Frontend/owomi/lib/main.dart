@@ -4,7 +4,7 @@ import 'package:owomi/data/storage_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ZkLoginStorageManager.init();
+  await StorageManager.init();
   runApp(const MyApp());
 }
 
