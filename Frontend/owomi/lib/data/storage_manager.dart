@@ -22,6 +22,8 @@ class ZkLoginStorageManager {
 
   static const String biometricsEnabled = "_biometrics_enabled";
 
+  static const String jwt = "_jwt";
+
   static init() async {
     _sharedPreferences = await SharedPreferences.getInstance();
   }
@@ -81,6 +83,13 @@ class ZkLoginStorageManager {
   }
 
   static String getBiometricsEnabled() =>
+      _sharedPreferences.getString(jwt) ?? '';
+
+  static Future<bool> setJwt(String value) async {
+    return await _sharedPreferences.setString(jwt, value);
+  }
+
+  static String getJwt() =>
       _sharedPreferences.getString(biometricsEnabled) ?? '';
 
   static String location() {
