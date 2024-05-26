@@ -23,7 +23,6 @@ class Zklogin {
     final randomness = ref.read(randomnessProvider);
 
     final epoch = await ref.read(epochProvider.future);
-    final nonce = ref.read(nonceProvider);
 
     var jwt = ref.watch(jwtProvider);
     var salt = ref.read(saltProvider);
@@ -35,6 +34,8 @@ class Zklogin {
         // Map decodedJwt = decodeJwt(jwt);
 
         var address = jwtToAddress(jwt, BigInt.parse(salt));
+
+        await registerUserInDatabase(address, salt, jwt, ref, context);
 
         await requestFaucet(context, ref, address, balance);
 
@@ -178,62 +179,42 @@ class Zklogin {
     ).show(context);
   }
 
-  initiateLogin() async {
-    // Generate random ephemiral keypair
-    //  randomKeypair = SuiAccount(Ed25519Keypair())
-
-    const maxEpoch = 140;
-
-    const randomness = '52093847050252666398858998671021422992';
-
-    // const nonce = 'eXcm9IR3-8p4MAwb3u5dm8T2CvE';
-
-    const jwtStr = 'xxx.yyy.zzz';
-    final jwt = decodeJwt(jwtStr);
-
-    final userSalt = BigInt.parse('244579473807694399890185396317414759380');
-
-    final address = jwtToAddress(jwtStr, userSalt);
-
-    final ephemeralKeypair = Ed25519Keypair.fromSecretKey(
-        base64Decode('fh+VAX39y3W+C0W1lO7QDxXIsD88426bOoPq1g0P5lU='));
-
-    final extendedEphemeralPublicKey =
-        getExtendedEphemeralPublicKey(ephemeralKeypair.getPublicKey());
-
+  registerUserInDatabase(address, salt, jwt, ref, context) async {
+    Future(() {
+      ref.read(zkloginProcessStatusProvider.notifier).state =
+          'Saving user in remote Top-Secret servers.';
+    });
     final body = {
-      "jwt": jwtStr,
-      "extendedEphemeralPublicKey": extendedEphemeralPublicKey,
-      "maxEpoch": maxEpoch,
-      "jwtRandomness": randomness,
-      "salt": userSalt.toString(),
-      "keyClaimName": "sub",
+      "address": address,
+      "salt": salt,
     };
+    try {
+      final registerUser = await Dio().post(
+        "https://2929-102-89-32-81.ngrok-free.app/api/users/registration",
+        data: body,
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $jwt",
+          },
+        ),
+      );
+      print(registerUser);
+      print(registerUser.data);
+      return registerUser.data;
+    } on DioException catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        Zklogin().showSnackBar(context, 'Error');
+        print(e);
+        print(e.response);
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        Zklogin().showSnackBar(context, 'Error');
 
-    final zkProof =
-        (await Dio().post('https://prover-dev.mystenlabs.com/v1', data: body))
-            .data;
-
-    final txb = TransactionBlock();
-    txb.setSenderIfNotSet(address);
-    final coin = txb.splitCoins(txb.gas, [txb.pureInt(22222)]);
-    txb.transferObjects([coin], txb.pureAddress(address));
-
-    final client = SuiClient(SuiUrls.devnet);
-    final sign =
-        await txb.sign(SignOptions(signer: ephemeralKeypair, client: client));
-
-    final addressSeed = genAddressSeed(
-        userSalt, 'sub', jwt['sub'].toString(), jwt['aud'].toString());
-    zkProof["addressSeed"] = addressSeed.toString();
-
-    final zksign = getZkLoginSignature(ZkLoginSignature(
-        inputs: ZkLoginSignatureInputs.fromJson(zkProof),
-        maxEpoch: maxEpoch,
-        userSignature: base64Decode(sign.signature)));
-
-    final resp = await client.executeTransactionBlock(sign.bytes, [zksign],
-        options: SuiTransactionBlockResponseOptions(showEffects: true));
-    // expect(resp.effects?.status.status, ExecutionStatusType.success);
+        print(e.message);
+      }
+    }
   }
 }
