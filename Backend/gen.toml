@@ -3,4 +3,4 @@
 rpc = "https://fullnode.testnet.sui.io:443"
 
 [packages]
-OwoMiPackage = { id = "0x0711a02c4e2ba28fce3d9c095a259f622b0502bfc1b96e77b6c0dc136199729f" }
+Owomi = { local = "../package" }
