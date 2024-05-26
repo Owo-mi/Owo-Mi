@@ -3,4 +3,4 @@
 rpc = "https://fullnode.testnet.sui.io:443"
 
 [packages]
-Owomi = { local = "../package" }
+Owomi = { local = "../sui" }
