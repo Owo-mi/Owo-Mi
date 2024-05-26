@@ -46,9 +46,9 @@ router.post('/registration',  verifyToken, subExist, async (req: Request, res: R
                     email: email
                 },
             });
-            res.status(200).json({ message: 'User Signed In' })
+            res.status(200).json({ message: 'user signed In' })
         }else {
-            return res.status(400).json({ message: 'User creation failed' });
+            return res.status(400).json({ message: 'user creation failed' });
         }
 
     } catch (error) {
