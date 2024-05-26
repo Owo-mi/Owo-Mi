@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
@@ -14,9 +16,33 @@ class GoogleSignInPage extends ConsumerStatefulWidget {
 }
 
 class _GoogleSignInPageState extends ConsumerState<GoogleSignInPage> {
+  bool hasInternetAccess = false;
+  bool finishedInternetAccessCheck = false;
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
+    checkInternetConnection();
+  }
+
+  checkInternetConnection() async {
+    try {
+      final result = await InternetAddress.lookup('jobaadewumi.vercel.app');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        setState(() {
+          hasInternetAccess = true;
+          finishedInternetAccessCheck = true;
+          isLoading = false;
+        });
+      }
+    } on SocketException catch (_) {
+      setState(() {
+        hasInternetAccess = false;
+        finishedInternetAccessCheck = true;
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -61,7 +87,37 @@ class _GoogleSignInPageState extends ConsumerState<GoogleSignInPage> {
             );
           },
         ),
-      AsyncError() => throw UnimplementedError(),
+      AsyncError() => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'No Internet Connection',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 35),
+              ),
+              isLoading
+                  ? const CircularProgressIndicator()
+                  : TextButton(
+                      child: Text(
+                        'Click to retry',
+                        style: TextStyle(
+                          color: Colors.blueAccent[400],
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          hasInternetAccess = false;
+                          finishedInternetAccessCheck = false;
+                          isLoading = true;
+                        });
+                        checkInternetConnection();
+                      },
+                    ),
+            ],
+          ),
+        ),
       _ => const Center(
           child: CircularProgressIndicator(),
         ),
