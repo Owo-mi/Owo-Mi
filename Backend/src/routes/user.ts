@@ -1,7 +1,6 @@
-import { Router } from "express"
-import { prisma } from "../config/prisma/Prismaclient"
-import { encrypt, decrypt } from "../functions/general_function";
-import { Request, Response } from "express";
+import { Request, Response, Router } from "express";
+import { prisma } from "../config/prisma/Prismaclient";
+import { decrypt, encrypt } from "../functions/general_function";
 
 import { subExist, verifyToken } from '../middleware/auth_option';
 
@@ -29,7 +28,7 @@ router.get('/testing', async (req, res) => {
  * @returns {status} - A successful status upon Registratiorn, returns 200 and a JSON object with a success message
  * @throws {Error} - If there are errors User Creation fails, returns 400 with an error message
  */
-router.post('/resgitration',  verifyToken, subExist, async (req: Request, res: Response) => {
+router.post('/registration',  verifyToken, subExist, async (req: Request, res: Response) => {
     try {
         if (req.body.payload) {
             const {sub}  = req.body.payload;
