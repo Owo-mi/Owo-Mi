@@ -31,8 +31,8 @@ router.get('/testing', async (req, res) => {
 router.post('/registration',  verifyToken, subExist, async (req: Request, res: Response) => {
     try {
         if (req.body.payload) {
-            const {sub}  = req.body.payload;
-            const { address, salt, email} = req.body;
+            const { sub, email}  = req.body.payload;
+            const { address, salt } = req.body;
     
             // Validate user data (e.g., ensure sub and hashedPassword are present)
             // Encrypt Salt
