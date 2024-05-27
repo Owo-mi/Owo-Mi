@@ -47,6 +47,7 @@ class _GoogleSignInPageState extends ConsumerState<GoogleSignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    //TODO: Write an error check to make sure page does not load when there is no internet
     final googleUrl = ref.watch(googleUrlProvider);
     return switch (googleUrl) {
       AsyncData(:final value) => InAppWebView(
