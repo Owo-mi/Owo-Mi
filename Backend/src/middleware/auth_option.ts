@@ -5,6 +5,7 @@ import {TokenExpiredError} from "jsonwebtoken";
 //import { verify } from '../functions/general_function';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
 import "dotenv/config";
+import { decrypt } from '../functions/general_function';
 /*
 A middleware that checks if sub exists in database
 *
@@ -21,11 +22,14 @@ export const subExist = async (req: Request, res: Response, next: NextFunction) 
             },
         });
 
-        if (existingUser) {
-            return res.status(400).json({ message: 'User with this sub already exists' });
+        if (!existingUser) {
+          return next(); 
         }
-
-        next(); // Move to the next middleware or route handler
+        const decrypted =  await decrypt(existingUser.salt);
+        return res.status(200).json({email: existingUser.email,
+                                     address: existingUser.address,
+                                     salt: decrypted
+         });// Move to the next middleware or route handler
     } catch (error) {
         console.error('Error checking sub existence:', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -42,7 +46,7 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
       }
       const token = authHeader.split(' ')[1];
       if (!token) {
-        return res.status(403).send("A token is required");
+        return res.status(403).json({message: "A token is required"});
       }
       const ticket = await client.verifyIdToken({
         idToken: token,
