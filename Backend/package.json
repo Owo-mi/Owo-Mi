@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "devStart": "cd src -- nodemon index.ts",
+    "devStart": "cd src && doppler run -- nodemon index.ts",
     "start": "cd src && doppler run -- node index.ts",
     "doppler": "prisma generate --schema=./src/config/prisma/schema.prisma&& doppler run -- prisma migrate dev --name=updateModel --schema=./src/config/prisma/schema.prisma"
   },
