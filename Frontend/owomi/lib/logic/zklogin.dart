@@ -4,6 +4,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
+import 'package:owomi/data/constants.dart';
 import 'package:owomi/data/storage_manager.dart';
 import 'package:owomi/provider/zk_login_provider.dart';
 import 'package:sui/sui.dart';
@@ -32,7 +33,7 @@ class Zklogin {
 
     if (signInComplete) {
       if (jwt != '') {
-        StorageManager.setJwt(jwt);
+        await StorageManager.setJwt(jwt);
         var address = jwtToAddress(jwt, BigInt.parse(salt));
 
         // Map decodedJwt = decodeJwt(jwt);
@@ -40,14 +41,15 @@ class Zklogin {
             await registerUserInDatabase(address, salt, jwt, ref, context);
         print('From block of code');
         print(serverResponse);
+        print(serverResponse['address']);
 
         if (serverResponse == null) {
           //TODO: Handle error
-        } else if (serverResponse.address) {
-          if (serverResponse.address != '') {
-            address = serverResponse?.address;
-            salt = serverResponse?.salt;
-          }
+          // This often occurs so just call the function again
+        } else if (serverResponse['address'] != null ||
+            serverResponse['address'] != '') {
+          address = serverResponse['address'];
+          salt = serverResponse['salt'];
         }
 
         await requestFaucet(context, ref, address, balance);
@@ -202,8 +204,8 @@ class Zklogin {
       "salt": salt,
     };
     try {
-      final registerUser = await Dio().post(
-        "https://1a75-197-211-58-112.ngrok-free.app/api/users/registration",
+      Response registerUser = await Dio().post(
+        "${Constant.backendUrl}/users/registration",
         data: body,
         options: Options(
           headers: {
@@ -220,8 +222,8 @@ class Zklogin {
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         // Zklogin().showSnackBar(context, 'Error');
-        // print(e);
-        // print(e.response);
+        print(e);
+        print(e.response);
       } else {
         // Something happened in setting up or sending the request that triggered an Error
         Zklogin().showSnackBar(context, 'Error');
