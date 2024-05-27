@@ -1,11 +1,12 @@
 # OWO MI
 
 ## BACKEND
-```dir: owomi/api``` **run the following commands in this directory.
-1. Create virtual environment ```python3 -m venv .venv```  and install requirements.txt. ```pip install requirements.txt```
+```dir: Backend/src``` **run the following commands in this directory.
+1. Install dependencies ```npm install```
 
 
 2. Setup Doppler CLI, then run `doppler secrets download --no-file --format env > .env` to mount env variables from doppler.
 
-3.  Run ```./run.sh``` to enable .venv and start server.
+3.  Run ```npm run devStart``` to start server.
 
+4. Directory ```dir: Backend/src``` run this `npx prisma db push` to update/push state to the database. 

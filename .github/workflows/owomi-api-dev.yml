@@ -13,20 +13,22 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
-        python-version: '3.x'
+        node-version: '^20.12.7'
 
     - name: Install dependencies
       run: |
-        cd owomi/app
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Run pylint
+        cd Backend
+        npm install
+
+    - name: Run linter
       run: |
         cd owomi/app
-        pylint --disable=R,C *.py
+        npx eslint . --ext .ts
+
     - name: Run tests
       run: |
-        #test commands
+        cd Backend
+        npm test
