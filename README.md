@@ -50,3 +50,5 @@ This overview has provided a glimpse into what Owó Mi can offer. We encourage y
 - Troubleshooting any issues you may encounter.
 
 We're confident that Owó Mi will revolutionize the way you manage your crypto savings. Check this [documentation]('documentation_link) to get started!
+
+If you have any questions, comments or interest in pursuing any other use cases, please reach out to us on twitter [@owomi_xyz](https://x.com/owomi_xyz?mx=2)
