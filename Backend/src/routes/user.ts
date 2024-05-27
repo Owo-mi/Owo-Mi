@@ -77,7 +77,7 @@ router.get('/salt', verifyToken, async (req: Request, res: Response) => {
         if (!user) {
           return res.status(404).json({ message: 'User not found' });
         }
-        const decrypted = decrypt(user.salt);
+        const decrypted =await decrypt(user.salt);
         res.status(200).json({salt: decrypted});
     
     } catch (error) {
