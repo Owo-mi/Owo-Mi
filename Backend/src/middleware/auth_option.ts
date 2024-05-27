@@ -46,7 +46,7 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
       }
       const token = authHeader.split(' ')[1];
       if (!token) {
-        return res.status(403).send("A token is required");
+        return res.status(403).json({message: "A token is required"});
       }
       const ticket = await client.verifyIdToken({
         idToken: token,
