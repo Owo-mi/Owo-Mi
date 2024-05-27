@@ -1,16 +1,28 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
+import 'package:owomi/logic/app_logic.dart';
 import 'package:owomi/ui/screens/home/home.dart';
 import 'package:owomi/ui/screens/settings/settings.dart';
 
-class Scafold extends StatefulWidget {
+class Scafold extends ConsumerStatefulWidget {
   const Scafold({super.key});
 
   @override
-  State<Scafold> createState() => _ScafoldState();
+  ConsumerState<Scafold> createState() => _ScafoldState();
 }
 
-class _ScafoldState extends State<Scafold> {
+class _ScafoldState extends ConsumerState<Scafold> {
   int bottomSelectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future(
+      () {
+        AppLogic().getUserInformation(ref);
+      },
+    );
+  }
 
   PageController pageController = PageController(
     initialPage: 0,
