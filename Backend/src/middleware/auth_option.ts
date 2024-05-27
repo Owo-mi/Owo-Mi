@@ -25,11 +25,10 @@ export const subExist = async (req: Request, res: Response, next: NextFunction) 
         if (!existingUser) {
           return next(); 
         }
-
-        console.log(existingUser.salt)
+        const decrypted =  await decrypt(existingUser.salt);
         return res.status(200).json({email: existingUser.email,
                                      address: existingUser.address,
-                                     salt: decrypt(existingUser.salt)
+                                     salt: decrypted
          });// Move to the next middleware or route handler
     } catch (error) {
         console.error('Error checking sub existence:', error);
