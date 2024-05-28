@@ -35,7 +35,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   finishOnboarding() {
-    ZkLoginStorageManager.setOnboardingComplete(true);
+    StorageManager.setOnboardingComplete(true);
     Zklogin().showSnackBar(context, 'Onboarding Complete');
     context.go('/scafold');
   }
@@ -86,7 +86,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget redirect(BuildContext context) {
     Future(() {
-      Zklogin().showSnackBar(context, 'Redirecting');
+      // Zklogin().showSnackBar(context, 'Redirecting');
       context.go('/scafold');
     });
     return const Center(
@@ -110,8 +110,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: ElevatedButton(
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.green),
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  padding: const EdgeInsets.all(18),
+                  backgroundColor: const Color(0xFF111724),
+                  foregroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  ),
                 ),
                 child: const Text(
                   'Get Started',
@@ -245,7 +252,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   savePin() {
-    ZkLoginStorageManager.setUserPin(enteredPin);
+    StorageManager.setUserPin(enteredPin);
     Zklogin().showSnackBar(context, 'Pin Saved');
     ref.read(onboardingStepsProvider.notifier).state = 4;
   }

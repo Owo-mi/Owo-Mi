@@ -4,7 +4,7 @@ import 'package:owomi/data/storage_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ZkLoginStorageManager.init();
+  await StorageManager.init();
   runApp(const MyApp());
 }
 
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         routeInformationProvider: appRouter.routeInformationProvider,
         routeInformationParser: appRouter.routeInformationParser,
         routerDelegate: appRouter.routerDelegate,
-        theme: ThemeData(fontFamily: 'Trispace'),
+        theme: ThemeData(fontFamily: 'Trispace', useMaterial3: true),
       ),
     );
   }

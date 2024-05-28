@@ -1,16 +1,29 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
+import 'package:owomi/logic/app_logic.dart';
 import 'package:owomi/ui/screens/home/home.dart';
+import 'package:owomi/ui/screens/savings/savings.dart';
 import 'package:owomi/ui/screens/settings/settings.dart';
 
-class Scafold extends StatefulWidget {
+class Scafold extends ConsumerStatefulWidget {
   const Scafold({super.key});
 
   @override
-  State<Scafold> createState() => _ScafoldState();
+  ConsumerState<Scafold> createState() => _ScafoldState();
 }
 
-class _ScafoldState extends State<Scafold> {
+class _ScafoldState extends ConsumerState<Scafold> {
   int bottomSelectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future(
+      () {
+        AppLogic().getUserInformation(ref);
+      },
+    );
+  }
 
   PageController pageController = PageController(
     initialPage: 0,
@@ -30,7 +43,7 @@ class _ScafoldState extends State<Scafold> {
         pageChanged(index);
       },
       physics: const NeverScrollableScrollPhysics(),
-      children: const [HomeScreen(), SettingsScreen()],
+      children: const [HomeScreen(), SavingsScreen(), SettingsScreen()],
     );
   }
 
@@ -45,13 +58,7 @@ class _ScafoldState extends State<Scafold> {
       const BottomNavigationBarItem(
         label: 'Savings',
         icon: Icon(
-          Icons.chat,
-        ),
-      ),
-      const BottomNavigationBarItem(
-        label: 'Investment',
-        icon: Icon(
-          Icons.bar_chart_rounded,
+          Icons.savings_rounded,
         ),
       ),
       const BottomNavigationBarItem(

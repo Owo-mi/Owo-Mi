@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ZkLoginStorageManager {
+class StorageManager {
   static late SharedPreferences _sharedPreferences;
 
   static SharedPreferences get sharedPreferences => _sharedPreferences;
@@ -21,6 +21,12 @@ class ZkLoginStorageManager {
   static const String userPin = "_user_pin";
 
   static const String biometricsEnabled = "_biometrics_enabled";
+
+  static const String jwt = "_jwt";
+
+  static const String address = "_address";
+
+  static const String email = "_email";
 
   static init() async {
     _sharedPreferences = await SharedPreferences.getInstance();
@@ -81,7 +87,25 @@ class ZkLoginStorageManager {
   }
 
   static String getBiometricsEnabled() =>
-      _sharedPreferences.getString(biometricsEnabled) ?? '';
+      _sharedPreferences.getString(jwt) ?? '';
+
+  static Future<bool> setJwt(String value) async {
+    return await _sharedPreferences.setString(jwt, value);
+  }
+
+  static String getJwt() => _sharedPreferences.getString(jwt) ?? '';
+
+  static Future<bool> setAddress(String value) async {
+    return await _sharedPreferences.setString(address, value);
+  }
+
+  static String getAddress() => _sharedPreferences.getString(address) ?? '';
+
+  static Future<bool> setEmail(String value) async {
+    return await _sharedPreferences.setString(email, value);
+  }
+
+  static String getEmail() => _sharedPreferences.getString(email) ?? '';
 
   static String location() {
     if (kIsWeb) return 'LocalStorage';

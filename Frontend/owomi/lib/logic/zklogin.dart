@@ -4,6 +4,8 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
+import 'package:owomi/data/constants.dart';
+import 'package:owomi/data/storage_manager.dart';
 import 'package:owomi/provider/zk_login_provider.dart';
 import 'package:sui/sui.dart';
 import 'package:sui/types/faucet.dart';
@@ -23,7 +25,6 @@ class Zklogin {
     final randomness = ref.read(randomnessProvider);
 
     final epoch = await ref.read(epochProvider.future);
-    final nonce = ref.read(nonceProvider);
 
     var jwt = ref.watch(jwtProvider);
     var salt = ref.read(saltProvider);
@@ -32,9 +33,26 @@ class Zklogin {
 
     if (signInComplete) {
       if (jwt != '') {
-        // Map decodedJwt = decodeJwt(jwt);
-
+        Map decodedJwt = decodeJwt(jwt);
+        await StorageManager.setJwt(jwt);
+        await StorageManager.setEmail(decodedJwt['email']);
         var address = jwtToAddress(jwt, BigInt.parse(salt));
+
+        var serverResponse =
+            await registerUserInDatabase(address, salt, jwt, ref, context);
+        print('From block of code');
+        print(serverResponse);
+        print(serverResponse['address']);
+
+        if (serverResponse == null) {
+          //TODO: Handle error
+          // This often occurs so just call the function again
+        } else if (serverResponse['address'] != null ||
+            serverResponse['address'] != '') {
+          address = serverResponse['address'];
+          salt = serverResponse['salt'];
+        }
+        await StorageManager.setAddress(address);
 
         await requestFaucet(context, ref, address, balance);
 
@@ -178,62 +196,44 @@ class Zklogin {
     ).show(context);
   }
 
-  initiateLogin() async {
-    // Generate random ephemiral keypair
-    //  randomKeypair = SuiAccount(Ed25519Keypair())
-
-    const maxEpoch = 140;
-
-    const randomness = '52093847050252666398858998671021422992';
-
-    // const nonce = 'eXcm9IR3-8p4MAwb3u5dm8T2CvE';
-
-    const jwtStr = 'xxx.yyy.zzz';
-    final jwt = decodeJwt(jwtStr);
-
-    final userSalt = BigInt.parse('244579473807694399890185396317414759380');
-
-    final address = jwtToAddress(jwtStr, userSalt);
-
-    final ephemeralKeypair = Ed25519Keypair.fromSecretKey(
-        base64Decode('fh+VAX39y3W+C0W1lO7QDxXIsD88426bOoPq1g0P5lU='));
-
-    final extendedEphemeralPublicKey =
-        getExtendedEphemeralPublicKey(ephemeralKeypair.getPublicKey());
-
+  registerUserInDatabase(address, salt, jwt, ref, context) async {
+    Future(() {
+      ref.read(zkloginProcessStatusProvider.notifier).state =
+          'Saving user in Top-Secret server.';
+    });
     final body = {
-      "jwt": jwtStr,
-      "extendedEphemeralPublicKey": extendedEphemeralPublicKey,
-      "maxEpoch": maxEpoch,
-      "jwtRandomness": randomness,
-      "salt": userSalt.toString(),
-      "keyClaimName": "sub",
+      "address": address,
+      "salt": salt,
     };
+    try {
+      Response registerUser = await Dio().post(
+        "${Constant.backendUrl}/users/registration",
+        data: body,
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $jwt",
+          },
+        ),
+      );
+      print(registerUser);
+      print(registerUser.data);
+      return registerUser.data;
+    } on DioException catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        // Zklogin().showSnackBar(context, 'Error');
+        print(e);
+        print(e.response);
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        Zklogin().showSnackBar(context, 'Error');
+        var error = e.message;
 
-    final zkProof =
-        (await Dio().post('https://prover-dev.mystenlabs.com/v1', data: body))
-            .data;
-
-    final txb = TransactionBlock();
-    txb.setSenderIfNotSet(address);
-    final coin = txb.splitCoins(txb.gas, [txb.pureInt(22222)]);
-    txb.transferObjects([coin], txb.pureAddress(address));
-
-    final client = SuiClient(SuiUrls.devnet);
-    final sign =
-        await txb.sign(SignOptions(signer: ephemeralKeypair, client: client));
-
-    final addressSeed = genAddressSeed(
-        userSalt, 'sub', jwt['sub'].toString(), jwt['aud'].toString());
-    zkProof["addressSeed"] = addressSeed.toString();
-
-    final zksign = getZkLoginSignature(ZkLoginSignature(
-        inputs: ZkLoginSignatureInputs.fromJson(zkProof),
-        maxEpoch: maxEpoch,
-        userSignature: base64Decode(sign.signature)));
-
-    final resp = await client.executeTransactionBlock(sign.bytes, [zksign],
-        options: SuiTransactionBlockResponseOptions(showEffects: true));
-    // expect(resp.effects?.status.status, ExecutionStatusType.success);
+        print(e.message);
+        // print(e.message?.message);
+      }
+    }
   }
 }
