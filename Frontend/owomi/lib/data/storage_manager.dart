@@ -24,6 +24,10 @@ class StorageManager {
 
   static const String jwt = "_jwt";
 
+  static const String address = "_address";
+
+  static const String email = "_email";
+
   static init() async {
     _sharedPreferences = await SharedPreferences.getInstance();
   }
@@ -89,8 +93,19 @@ class StorageManager {
     return await _sharedPreferences.setString(jwt, value);
   }
 
-  static String getJwt() =>
-      _sharedPreferences.getString(biometricsEnabled) ?? '';
+  static String getJwt() => _sharedPreferences.getString(jwt) ?? '';
+
+  static Future<bool> setAddress(String value) async {
+    return await _sharedPreferences.setString(address, value);
+  }
+
+  static String getAddress() => _sharedPreferences.getString(address) ?? '';
+
+  static Future<bool> setEmail(String value) async {
+    return await _sharedPreferences.setString(email, value);
+  }
+
+  static String getEmail() => _sharedPreferences.getString(email) ?? '';
 
   static String location() {
     if (kIsWeb) return 'LocalStorage';
