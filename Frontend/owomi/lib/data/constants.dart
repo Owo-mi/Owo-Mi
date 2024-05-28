@@ -5,7 +5,7 @@ class Constant {
   static String googleClientId =
       '871727533353-u9cgmdv27piis08k5q39r4hpaorfofjk.apps.googleusercontent.com';
 
-  static String backendUrl = 'https://f91f-197-211-59-16.ngrok-free.app/api';
+  static String backendUrl = 'https://owo-mi.onrender.com/api';
 }
 
 class CoinType {
