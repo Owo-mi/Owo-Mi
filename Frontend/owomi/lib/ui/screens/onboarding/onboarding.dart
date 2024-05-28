@@ -110,8 +110,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: ElevatedButton(
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.green),
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  padding: const EdgeInsets.all(18),
+                  backgroundColor: const Color(0xFF111724),
+                  foregroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  ),
                 ),
                 child: const Text(
                   'Get Started',
