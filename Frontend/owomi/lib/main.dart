@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         routeInformationProvider: appRouter.routeInformationProvider,
         routeInformationParser: appRouter.routeInformationParser,
         routerDelegate: appRouter.routerDelegate,
-        theme: ThemeData(fontFamily: 'Trispace'),
+        theme: ThemeData(fontFamily: 'Trispace', useMaterial3: true),
       ),
     );
   }
