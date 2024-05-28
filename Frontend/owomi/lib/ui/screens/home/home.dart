@@ -341,13 +341,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-    // Container(
-    //   child: Center(
-    //     child: TextButton(
-    //       child: const Text('Yoo'),
-    //       onPressed: () => context.go('/'),
-    //     ),
-    //   ),
-    // );
   }
 }
