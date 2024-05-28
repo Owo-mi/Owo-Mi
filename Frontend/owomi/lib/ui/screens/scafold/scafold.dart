@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
 import 'package:owomi/logic/app_logic.dart';
 import 'package:owomi/ui/screens/home/home.dart';
+import 'package:owomi/ui/screens/savings/savings.dart';
 import 'package:owomi/ui/screens/settings/settings.dart';
 
 class Scafold extends ConsumerStatefulWidget {
@@ -42,7 +43,7 @@ class _ScafoldState extends ConsumerState<Scafold> {
         pageChanged(index);
       },
       physics: const NeverScrollableScrollPhysics(),
-      children: const [HomeScreen(), SettingsScreen()],
+      children: const [HomeScreen(), SavingsScreen(), SettingsScreen()],
     );
   }
 
@@ -57,13 +58,7 @@ class _ScafoldState extends ConsumerState<Scafold> {
       const BottomNavigationBarItem(
         label: 'Savings',
         icon: Icon(
-          Icons.chat,
-        ),
-      ),
-      const BottomNavigationBarItem(
-        label: 'Investment',
-        icon: Icon(
-          Icons.bar_chart_rounded,
+          Icons.savings_rounded,
         ),
       ),
       const BottomNavigationBarItem(
