@@ -110,6 +110,12 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
   savePin() {
     StorageManager.setUserPin(enteredPin);
     Zklogin().showSnackBar(context, 'Pin Saved');
+    setState(() {
+      enteredPin = '';
+      enteredConfirmedPin = '';
+      enteredPinFull = false;
+      isPinVisible = false;
+    });
   }
 
   Color showPinColor(index) {
