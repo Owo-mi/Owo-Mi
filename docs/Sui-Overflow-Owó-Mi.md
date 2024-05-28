@@ -3,7 +3,7 @@ This document details our journey for the Sui Overflow Hackathon with our projec
 
 ## PROJECT TIMELINE
 - Start date: 5th of March, 2024
-- End date: 29th of March, 2024
+- End date: 29th of May, 2024
 
 ## THE TEAM
 
