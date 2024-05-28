@@ -33,10 +33,11 @@ class Zklogin {
 
     if (signInComplete) {
       if (jwt != '') {
+        Map decodedJwt = decodeJwt(jwt);
         await StorageManager.setJwt(jwt);
+        await StorageManager.setEmail(decodedJwt['email']);
         var address = jwtToAddress(jwt, BigInt.parse(salt));
 
-        // Map decodedJwt = decodeJwt(jwt);
         var serverResponse =
             await registerUserInDatabase(address, salt, jwt, ref, context);
         print('From block of code');
@@ -51,6 +52,7 @@ class Zklogin {
           address = serverResponse['address'];
           salt = serverResponse['salt'];
         }
+        await StorageManager.setAddress(address);
 
         await requestFaucet(context, ref, address, balance);
 
