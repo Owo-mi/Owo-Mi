@@ -97,6 +97,7 @@ module owomi::saving {
         id.delete();
     }
 
+    #[allow(lint(share_owned))]
     public fun share<T>(self: Saving<T>) {
         transfer::share_object(self)
     }

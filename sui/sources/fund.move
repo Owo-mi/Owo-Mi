@@ -70,6 +70,15 @@ module owomi::fund {
         }
     }
 
+    #[allow(lint(share_owned))]
+    public fun share(self: Fund) {
+        transfer::share_object(self)
+    }
+
+    public fun transfer_cap(cap: FundCap, recipient: address) {
+        transfer::transfer(cap, recipient)
+    }
+
     public fun new_authorized_cap(fund: &mut Fund, ctx: &mut TxContext): FundCap {
         assert!(fund.owner == ctx.sender(), EUnauthorized);
         let cap = fund.new_cap(ctx);
