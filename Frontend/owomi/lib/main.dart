@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
         routeInformationParser: appRouter.routeInformationParser,
         routerDelegate: appRouter.routerDelegate,
         theme: ThemeData(fontFamily: 'Trispace', useMaterial3: true),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }
