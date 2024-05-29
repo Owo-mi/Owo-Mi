@@ -35,16 +35,15 @@ class _SavingsScreenState extends State<SavingsScreen> {
     }
   ];
 
-  Color? selectColor(key) {
+  Color selectColor(key) {
     if (key == "1") {
-      print('wetin dey zuzu');
-      return Colors.greenAccent[600];
+      return const Color(0xFF69F0AE);
     } else if (key == "2") {
-      return Colors.redAccent[600];
+      return const Color(0xFFFF5252);
     } else if (key == "3") {
-      return Colors.orangeAccent[600];
+      return const Color(0xFFFFAB40);
     } else {
-      return Colors.blueAccent[600];
+      return const Color(0xFF448AFF);
     }
   }
 
@@ -93,8 +92,8 @@ class _SavingsScreenState extends State<SavingsScreen> {
           // margin: const EdgeInsets.only(left: 5.0, right: 5.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15.0),
+            color: selectColor(key),
           ),
-          color: selectColor(key) ?? Colors.blueAccent[600],
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
