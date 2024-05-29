@@ -1,8 +1,19 @@
 import {Router} from "express"
 import {TransactionBlock} from "@mysten/sui.js/transactions"
 import {SuiClient} from "@mysten/sui.js/client"
-import {MOVE_STDLIB_ADDRESS, SUI_CLOCK_OBJECT_ID,} from "@mysten/sui.js/utils"
-import {new_ as newSaving, newSavingTarget, share, transferCap} from "../../generated/owomi/saving/functions";
+import {MOVE_STDLIB_ADDRESS, SUI_CLOCK_OBJECT_ID, SUI_TYPE_ARG} from "@mysten/sui.js/utils"
+import {bcs} from "@mysten/sui.js/bcs"
+import {fromB64} from "@mysten/bcs"
+import {
+    deposit,
+    new_ as newSaving,
+    newAuthorizedCap,
+    newSavingTarget,
+    revokeCap,
+    share,
+    transferCap,
+    withdraw
+} from "../../generated/owomi/saving/functions";
 import {SavingCap} from "../../generated/owomi/saving/structs";
 
 const router = Router();
@@ -47,7 +58,7 @@ router.post('/', async (req, res) => {
     return res.json({status: "success", data: txb.serialize()})
 });
 
-router.get("/savings", async (req, res) => {
+router.get("", async (req, res) => {
     const address = req.query.address
     if (!address) {
         return res.status(404).json({message: 'Owner address is required'})
@@ -79,7 +90,7 @@ router.get("/savings", async (req, res) => {
     return res.json({status: "success", data: savings})
 })
 
-router.post("/savings/:id/deposit", async (req, res) => {
+router.post("/:id/deposit", async (req, res) => {
     const {
         coinType,
         amount,
@@ -90,12 +101,125 @@ router.post("/savings/:id/deposit", async (req, res) => {
     const txb = new TransactionBlock()
 
     // TODO: fetch the user's coin objects
+    const {total, objects} = await getCoinsForSaving(address, amount, coinType)
+    if (total == BigInt(0)) {
+        return res.json({status: "error", message: `Insufficient coin objects for ${coinType}`})
+    }
 
-    // TODO: prepare the coin objects for the deposit
+    // Prepare coins for deposit
+    let depositCoin
+    if (coinType == SUI_TYPE_ARG) {
+        [depositCoin] = txb.splitCoins(txb.gas, [amount]);
+    }
 
-    // TODO: make the necessary move calls
+    const primaryCoin = txb.object(objects.pop()!);
+    if (objects.length > 0) {
+        txb.mergeCoins(primaryCoin, objects.map(txb.object));
+    }
+
+    if (total > amount) {
+        [depositCoin] = txb.splitCoins(primaryCoin, [amount]);
+    }
+
+    deposit(txb, coinType, {
+        cap: savingCap,
+        coin: depositCoin ?? primaryCoin,
+        self: txb.object(req.params.id)
+    })
+
+    return res.json({status: "success", data: txb.serialize()})
+})
+
+router.post("/:id/withdraw", (req, res) => {
+    const {
+        coinType,
+        amount,
+        savingCap,
+        address // current user address, idk if we have it from the auth header?
+    } = req.body;
+    const txb = new TransactionBlock()
+
+    const [coin] = withdraw(txb, coinType, {
+        cap: savingCap,
+        amount: amount,
+        self: txb.object(req.params.id),
+        clock: txb.object(SUI_CLOCK_OBJECT_ID),
+    })
+    txb.transferObjects([coin], address)
+
+    return res.json({status: "success", data: txb.serialize()})
+})
+
+router.post("/:id/authorize", (req, res) => {
+    const {
+        coinType,
+        recipient // current user address, idk if we have it from the auth header?
+    } = req.body;
+    const txb = new TransactionBlock()
+
+    const [cap] = newAuthorizedCap(txb, coinType, txb.object(req.params.id))
+    txb.transferObjects([cap], recipient)
+
+    return res.json({status: "success", data: txb.serialize()})
+})
+
+router.post("/:id/revoke", (req, res) => {
+    const {
+        coinType,
+        savingCap,
+        recipient // current user address, idk if we have it from the auth header?
+    } = req.body;
+    const txb = new TransactionBlock()
+    revokeCap(txb, coinType, {self: txb.object(req.params.id), cap: savingCap})
 
     return res.json({status: "success", data: txb.serialize()})
 })
 
 export default router;
+
+const CoinStruct = bcs.struct("CoinStruct", {
+    id: bcs.Address,
+    balance: bcs.u64()
+})
+
+const getCoinsForSaving = async (
+    address: string,
+    amount: bigint,
+    coinType: string
+) => {
+    let {total, objects}: { total: bigint, objects: string[] } = {total: BigInt(0), objects: []}
+    let hasNext: boolean = true;
+    let cursor: string | undefined | null = null;
+
+    while (hasNext) {
+        const {hasNextPage, nextCursor, data} = await client.getOwnedObjects({
+            owner: address,
+            cursor,
+            options: {showBcs: true},
+            filter: {StructType: `0x2::coin::Coin<${coinType}>`}
+        })
+
+        for (const object of data) {
+            if (object.data?.bcs?.dataType !== "moveObject") continue;
+            const coinData = CoinStruct.parse(fromB64(object.data.bcs.bcsBytes))
+            total += BigInt(coinData.balance)
+            objects.push(coinData.id)
+        }
+
+        if (total >= amount) {
+            hasNext = false
+            cursor = null
+            break
+        }
+
+        hasNext = hasNextPage
+        cursor = nextCursor
+    }
+
+    if (total < amount) {
+        return {total: BigInt(0), objects: []}
+    }
+
+    return {total, objects}
+};
+

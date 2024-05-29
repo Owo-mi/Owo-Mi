@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@mysten/bcs": "^1.0.0",
     "dotenv": "^16.4.5"
   }
 }

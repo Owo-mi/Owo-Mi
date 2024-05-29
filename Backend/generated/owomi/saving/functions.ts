@@ -24,6 +24,12 @@ export interface RevokeCapArgs { self: ObjectArg; cap: string | TransactionArgum
 
 export function revokeCap( txb: TransactionBlock, typeArg: string, args: RevokeCapArgs ) { return txb.moveCall({ target: `${PUBLISHED_AT}::saving::revoke_cap`, typeArguments: [typeArg], arguments: [ obj(txb, args.self), pure(txb, args.cap, `0x2::object::ID`) ], }) }
 
+export function share( txb: TransactionBlock, typeArg: string, self: ObjectArg ) { return txb.moveCall({ target: `${PUBLISHED_AT}::saving::share`, typeArguments: [typeArg], arguments: [ obj(txb, self) ], }) }
+
+export interface TransferCapArgs { cap: ObjectArg; recipient: string | TransactionArgument }
+
+export function transferCap( txb: TransactionBlock, args: TransferCapArgs ) { return txb.moveCall({ target: `${PUBLISHED_AT}::saving::transfer_cap`, arguments: [ obj(txb, args.cap), pure(txb, args.recipient, `address`) ], }) }
+
 export interface WithdrawArgs { self: ObjectArg; cap: ObjectArg; amount: (bigint | TransactionArgument | TransactionArgument | null); clock: ObjectArg }
 
 export function withdraw( txb: TransactionBlock, typeArg: string, args: WithdrawArgs ) { return txb.moveCall({ target: `${PUBLISHED_AT}::saving::withdraw`, typeArguments: [typeArg], arguments: [ obj(txb, args.self), obj(txb, args.cap), pure(txb, args.amount, `0x1::option::Option<u64>`), obj(txb, args.clock) ], }) }
@@ -37,12 +43,6 @@ export function newSavingCap( txb: TransactionBlock, typeArg: string, saving: Ob
 export interface NewSavingTargetArgs { date: bigint | TransactionArgument; amount: bigint | TransactionArgument }
 
 export function newSavingTarget( txb: TransactionBlock, args: NewSavingTargetArgs ) { return txb.moveCall({ target: `${PUBLISHED_AT}::saving::new_saving_target`, arguments: [ pure(txb, args.date, `u64`), pure(txb, args.amount, `u64`) ], }) }
-
-export function share( txb: TransactionBlock, typeArg: string, self: ObjectArg ) { return txb.moveCall({ target: `${PUBLISHED_AT}::saving::share`, typeArguments: [typeArg], arguments: [ obj(txb, self) ], }) }
-
-export interface TransferCapArgs { cap: ObjectArg; recipient: string | TransactionArgument }
-
-export function transferCap( txb: TransactionBlock, args: TransferCapArgs ) { return txb.moveCall({ target: `${PUBLISHED_AT}::saving::transfer_cap`, arguments: [ obj(txb, args.cap), pure(txb, args.recipient, `address`) ], }) }
 
 export interface WithdrawToFundArgs { self: ObjectArg; fund: ObjectArg; savingCap: ObjectArg; amount: (bigint | TransactionArgument | TransactionArgument | null); clock: ObjectArg }
 
