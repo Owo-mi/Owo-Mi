@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
 import 'package:owomi/data/storage_manager.dart';
+import 'package:owomi/logic/app_logic.dart';
 import 'package:owomi/logic/zklogin.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -22,6 +23,13 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
   bool isPinVisible = false;
 
   bool biometrics = true;
+
+  String truncatedAddress =
+      AppLogic().truncateString(StorageManager.getAddress()) ?? "";
+
+  String truncatedEmail =
+      AppLogic().truncateEmail(StorageManager.getEmail()) ?? "";
+
   Widget biometricsSwitch() => Transform.scale(
         scale: 1.1,
         child: SwitchListTile.adaptive(
@@ -288,7 +296,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
 
   Widget changePin() {
     return Container(
-      color: Colors.green,
+      color: const Color(0xFFDADADA),
       child: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -457,6 +465,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
         actions: const <Widget>[
           BackdropToggleButton(
             icon: AnimatedIcons.list_view,
+            color: Colors.black,
           )
         ],
       ),
@@ -478,69 +487,49 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
       frontLayer: _pages(),
       backLayer: Container(
         padding: const EdgeInsets.fromLTRB(10.0, 100.0, 10.0, 20.0),
-        // color: Colors.blue,
+        color: Colors.white,
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.only(
-                  top: 40.0, bottom: 30.0, left: 10.0, right: 10.0),
-              // decoration: const BoxDecoration(
-              //   borderRadius: BorderRadius.all(
-              //     Radius.circular(8.0),
-              //   ),
-              //   gradient: LinearGradient(
-              //       colors: [Colors.transparent, Colors.blue],
-              //       begin: FractionalOffset(0.0, 0.0),
-              //       end: FractionalOffset(1.0, 0.0),
-              //       stops: [0.0, 1.0],
-              //       tileMode: TileMode.clamp),
-              // ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                top: 40.0,
+                bottom: 30.0,
+                left: 10.0,
+                right: 10.0,
+              ),
+              child: Column(
                 children: [
-                  SizedBox.fromSize(
-                    size: const Size(70, 70),
-                    child: ClipOval(
-                      child: Material(
-                        color: Colors.grey,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.send,
-                            color: Colors.black,
-                          ),
-                          onPressed: () {},
+                  truncatedEmail != ""
+                      ? Text(truncatedEmail)
+                      : const Text("Couldn't Fetch Email"),
+                  SizedBox(
+                    width: 200.0,
+                    child: ElevatedButton(
+                      style: const ButtonStyle(
+                        // iconSize: MaterialStatePropertyAll(13.0),
+                        // fixedSize: MaterialStatePropertyAll(
+                        //   Size.fromWidth(200.0),
+                        // ),
+                        padding: WidgetStatePropertyAll(
+                          EdgeInsets.only(left: 10.0, right: 10.0),
                         ),
+                      ),
+                      onPressed: () {},
+                      child: Row(
+                        children: [
+                          truncatedAddress != ""
+                              ? Text(truncatedAddress)
+                              : const Text("Couldn't Fetch Address"),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 5.0, right: 5.0),
+                            child: Icon(
+                              Icons.copy,
+                              size: 13.0,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      const Text('jobaadewumis@gmail.com'),
-                      ElevatedButton(
-                        style: const ButtonStyle(
-                          // iconSize: MaterialStatePropertyAll(13.0),
-                          // fixedSize: MaterialStatePropertyAll(
-                          //   Size.fromWidth(200.0),
-                          // ),
-                          padding: MaterialStatePropertyAll(
-                            EdgeInsets.only(left: 10.0, right: 10.0),
-                          ),
-                        ),
-                        onPressed: () {},
-                        child: const Row(
-                          children: [
-                            Text('0xsdsdsdsdsdssd'),
-                            Padding(
-                              padding: EdgeInsets.only(left: 5.0, right: 5.0),
-                              child: Icon(
-                                Icons.copy,
-                                size: 13.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -548,7 +537,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             Expanded(
               child: ListView(
                 children: [
-                  biometricsSwitch(),
+                  // biometricsSwitch(),
                   BackdropNavigationBackLayer(
                     items: const [
                       ListTile(
@@ -560,15 +549,20 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                         leading: Icon(Icons.file_upload_rounded),
                         title: Text('Check for Updates'),
                         trailing: Icon(Icons.chevron_right_rounded),
+                        enabled: false,
                       ),
                       ListTile(
                         leading: Icon(Icons.wallet),
                         title: Text('Withdraw Funds'),
                         trailing: Icon(Icons.chevron_right_rounded),
+                        enabled: false,
                       ),
                     ],
                     onTap: (int position) => {
-                      setState(() => _currentIndex = position),
+                      if (position == 0)
+                        {
+                          setState(() => _currentIndex = position),
+                        },
                     },
                   ),
                 ],
