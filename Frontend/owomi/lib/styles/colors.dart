@@ -2,7 +2,8 @@ import 'package:owomi/common_libs.dart';
 
 class AppColors {
   /// Common
-  final Color accent1 = const Color(0x0064c466);
+  final Color accent1 = const Color(0xFF111724);
+  //
   final Color accent2 = const Color(0x0000373f);
   final Color offWhite = const Color(0xFFF8ECE5);
   final Color caption = const Color(0xFF7D7873);
