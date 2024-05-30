@@ -1,0 +1,34 @@
+name: Owo Mi Dev API Workflow
+
+on:
+  push:
+    branches:
+      - development-mvp
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '^20.12.7'
+
+    - name: Install dependencies
+      run: |
+        cd Backend
+        npm install
+
+    - name: Run linter
+      run: |
+        cd owomi/app
+        npx eslint . --ext .ts
+
+    - name: Run tests
+      run: |
+        cd Backend
+        npm test
