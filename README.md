@@ -43,5 +43,6 @@ Owó Mi leverages a robust technology stack to deliver a secure and user-friendl
 ## Conclusion
 Owó Mi empowers you to take control of your crypto savings and unlock exciting new possibilities. With its user-friendly mobile app built on the secure Sui blockchain, Owó Mi offers a variety of features designed to help you grow your savings while keeping your digital assets safe.
 
+For more detailed information about our project, including our vision, features, and future plans, please check out our pitch deck [here](https://drive.google.com/file/d/1I67MFtPFRLGs_Af31VTOxSlBYMOvhluu/view).
 
 If you have any questions, comments or interest in pursuing any other use cases, please reach out to us on twitter [@owomi_xyz](https://x.com/owomi_xyz?mx=2)
