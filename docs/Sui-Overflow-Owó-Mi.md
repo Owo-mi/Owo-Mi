@@ -38,5 +38,5 @@ Yours Truly,
 [Ola](github.com/vantage-ola)
 
 ## What is Owó Mi ?
-For more detailed information about our project, including our vision, features, and future plans, please check out our pitch deck [here](pitch-deck-link).
+For more detailed information about our project, including our vision, features, and future plans, please check out our pitch deck [here](https://drive.google.com/file/d/1I67MFtPFRLGs_Af31VTOxSlBYMOvhluu/view).
 
