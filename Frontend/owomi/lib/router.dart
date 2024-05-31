@@ -19,7 +19,12 @@ final appRouter = GoRouter(
   // redirect: _handleRedirect,
   routes: [
     AppRoute(ScreenPaths.onboarding, (s) => const OnboardingScreen()),
-    AppRoute(ScreenPaths.googlesignin, (s) => const GoogleSignInPage()),
+    AppRoute(
+      ScreenPaths.googlesignin,
+      (s) => GoogleSignInPage(
+        transaction: s.uri.queryParameters["transaction"],
+      ),
+    ),
     // AppRoute(
     //     ScreenPaths.splash,
     //     (_) => Container(
@@ -31,6 +36,7 @@ final appRouter = GoRouter(
       (s) => SavingsFormScreen(
         savingType: s.uri.queryParameters["savingsType"],
         savingName: s.uri.queryParameters["savingsName"],
+        googleRedirect: s.uri.queryParameters["googleRedirect"],
       ),
     ),
   ],
