@@ -39,6 +39,14 @@ Owó Mi leverages a robust technology stack to deliver a secure and user-friendl
     - Flutter: The user interface of the Owó Mi mobile app is built with Flutter, known for its fast development and ability to create beautiful, native-looking experiences for iOS and Android devices.
     - TypeScript: TypeScript provides a powerful and scalable foundation for Owó Mi's backend development, ensuring code maintainability and efficiency
 
+### Problems Faced
+Owó Mi leverages a robust technology stack to deliver a secure and user-friendly experience:
+
+- Issues with Flutter:
+    - Signing Savings Transaction: We had an issue signing the savings transaction and executing the block. The contract was inplemented in the backend with TypeScript, we pass the appropriate parameters for the user savings and the server returns  ```bash txb.serialize()```
+    Unfortunately we were not able to find a function to execute the transaction after long debugging sessions and a Sui Office Hours call.
+    
+
 
 ## Conclusion
 Owó Mi empowers you to take control of your crypto savings and unlock exciting new possibilities. With its user-friendly mobile app built on the secure Sui blockchain, Owó Mi offers a variety of features designed to help you grow your savings while keeping your digital assets safe.

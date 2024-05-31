@@ -12,7 +12,7 @@ import 'package:sui/types/faucet.dart';
 import 'package:zklogin/zklogin.dart';
 
 class Zklogin {
-  final suiClient = SuiClient(SuiUrls.testnet);
+  final suiClient = SuiClient(SuiUrls.devnet);
 
   initiate(WidgetRef ref, context) async {
     var signInComplete = ref.watch(googleSignInCompleteProvider);
