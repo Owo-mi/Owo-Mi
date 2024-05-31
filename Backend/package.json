@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "devStart": "cd src && doppler run -- nodemon index.ts",
-    "start": "cd src && doppler run -- node index.ts",
+    "start": "cd src && npx doppler run -- node index.ts",
     "doppler": "prisma generate --schema=./src/config/prisma/schema.prisma&& doppler run -- prisma migrate dev --name=updateModel --schema=./src/config/prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@mysten/bcs": "^0.11.1",
     "@mysten/sui.js": "^0.52.0",
     "@prisma/client": "^5.14.0",
     "@types/axios": "^0.14.0",
@@ -31,7 +32,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.21",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.12.13",
     "nodemon": "^3.1.0",
     "prisma": "^5.13.0",
     "ts-node": "^10.9.2",
