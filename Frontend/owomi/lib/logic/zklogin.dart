@@ -12,7 +12,7 @@ import 'package:sui/types/faucet.dart';
 import 'package:zklogin/zklogin.dart';
 
 class Zklogin {
-  final suiClient = SuiClient(SuiUrls.devnet);
+  final suiClient = SuiClient(SuiUrls.testnet);
 
   initiate(WidgetRef ref, context) async {
     var signInComplete = ref.watch(googleSignInCompleteProvider);
@@ -64,6 +64,7 @@ class Zklogin {
         ref.read(zkloginInitializeRunningProvider.notifier).state = false;
         ref.read(zkloginCompleteProvider.notifier).state = true;
         ref.read(onboardingStepsProvider.notifier).state = 3;
+        ref.read(zkloginProcessStatusProvider.notifier).state = '';
       }
     }
   }
