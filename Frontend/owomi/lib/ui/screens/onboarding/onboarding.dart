@@ -1,4 +1,5 @@
 // import 'package:onboarding/onboarding.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:local_auth/local_auth.dart';
 import 'package:owomi/common_libs.dart';
+import 'package:owomi/data/constants.dart';
 import 'package:owomi/data/storage_manager.dart';
 import 'package:owomi/logic/zklogin.dart';
 import 'package:owomi/provider/zk_login_provider.dart';
@@ -28,10 +30,52 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   late bool canAuthenticateWithBiometrics;
 
+  int timesPinged = 0;
+  String pingError = "";
+  bool pinging = false;
+
   @override
   void initState() {
     super.initState();
     canAuthenticate();
+  }
+
+  pingServerHealth() async {
+    try {
+      final getUser = await Dio().get(
+        Constant.backendUrl,
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            // "Authorization": "Bearer $jwt",
+          },
+        ),
+      );
+      setState(() {
+        timesPinged = timesPinged + 1;
+      });
+      print(getUser.statusCode);
+      return getUser.statusCode;
+    } on DioException catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        // Zklogin().showSnackBar(context, 'Error');
+        print(e);
+        print(e.response);
+        setState(() {
+          timesPinged = timesPinged + 1;
+        });
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        // Zklogin().showSnackBar(context, 'Error');
+        setState(() {
+          timesPinged = timesPinged + 1;
+        });
+        print(e.message);
+        // print(e.message?.message);
+      }
+    }
   }
 
   finishOnboarding() {
@@ -107,31 +151,72 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         Expanded(
           child: Align(
             alignment: Alignment.bottomCenter,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.all(18),
-                  backgroundColor: const Color(0xFF111724),
-                  foregroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                pinging
+                    ? const Text("Trying to get health from server")
+                    : Container(),
+                const SizedBox(height: 20.0),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
+                    padding: const EdgeInsets.all(18),
+                    backgroundColor: const Color(0xFF111724),
+                    foregroundColor: Colors.white,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
                   ),
+                  child: pinging
+                      ? const CircularProgressIndicator()
+                      : Text(
+                          pingError == "" ? "Get Started" : pingError,
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                  onPressed: () async {
+                    setState(() {
+                      pinging = true;
+                    });
+                    var serverHealth = await pingServerHealth();
+                    if (serverHealth != 200 && timesPinged <= 3) {
+                      var secondPing = await pingServerHealth();
+                      if (secondPing != 200 && timesPinged <= 3) {
+                        var thirdPing = await pingServerHealth();
+                        if (thirdPing != 200 && timesPinged <= 3) {
+                          setState(() {
+                            pingError = "Could not ping server";
+                            pinging = false;
+                            timesPinged = 0;
+                          });
+                        } else {
+                          setState(() {
+                            pinging = true;
+                          });
+                          ref.read(onboardingStepsProvider.notifier).state = 2;
+                        }
+                      } else {
+                        setState(() {
+                          pinging = true;
+                        });
+                        ref.read(onboardingStepsProvider.notifier).state = 2;
+                      }
+                    } else {
+                      setState(() {
+                        pinging = true;
+                      });
+                      ref.read(onboardingStepsProvider.notifier).state = 2;
+                    }
+                    return;
+                  },
                 ),
-                child: const Text(
-                  'Get Started',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                onPressed: () =>
-                    ref.read(onboardingStepsProvider.notifier).state = 2,
-              ),
+              ],
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -548,7 +633,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.white,
+      // backgroundColor: AppTheme.backgroundColor,
       body: Container(
         margin: EdgeInsets.symmetric(
           vertical: width < 600 ? 20 : 40,
