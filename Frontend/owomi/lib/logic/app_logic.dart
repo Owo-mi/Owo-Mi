@@ -11,7 +11,7 @@ import 'package:sui/sui.dart';
 import '../provider/zk_login_provider.dart';
 
 class AppLogic {
-  final suiClient = SuiClient(SuiUrls.testnet);
+  final suiClient = SuiClient(SuiUrls.devnet);
 
   warmUpForTransaction(WidgetRef ref, BuildContext context) async {
     Future(() {
@@ -202,11 +202,17 @@ class AppLogic {
     var serialized =
         await regularSavings(coinType, name, description, address, target);
 
+    // SuiClient.
+
+    var txb2 = SuiTransactionBlock.fromJson(jsonDecode(serialized));
+    print(txb2);
+    var txb1 = SuiTransactionBlock.fromJson(serialized);
+    print(txb1);
     // print(jsonDecode(serialized));
-    final txb = TransactionBlock();
     var blockData = TransactionBlockDataBuilder.restore(
       jsonDecode(serialized),
     );
+    final txb = TransactionBlock();
     blockData.sender = address;
     blockData.gasConfig.owner = address;
     // var res = await suiClient.s
