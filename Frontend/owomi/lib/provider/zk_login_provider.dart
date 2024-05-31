@@ -12,7 +12,7 @@ import 'package:sui/sui.dart';
 import 'package:sui/types/faucet.dart';
 import 'package:zklogin/zklogin.dart';
 
-final suiClient = SuiClient(SuiUrls.testnet);
+final suiClient = SuiClient(SuiUrls.devnet);
 
 final suiAccountProvider = Provider<SuiAccount>((ref) {
   var keypair = StorageManager.getTemporaryCacheKeyPair();
