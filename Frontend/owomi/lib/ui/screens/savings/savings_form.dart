@@ -3,23 +3,42 @@ import 'package:owomi/common_libs.dart';
 import 'package:owomi/data/constants.dart';
 import 'package:owomi/data/storage_manager.dart';
 import 'package:owomi/logic/app_logic.dart';
+import 'package:owomi/provider/app_provider.dart';
+import 'package:owomi/provider/zk_login_provider.dart';
 
 class SavingsFormScreen extends ConsumerStatefulWidget {
   final String? savingType;
   final String? savingName;
+  final String? googleRedirect;
 
-  const SavingsFormScreen({super.key, this.savingType, this.savingName});
+  const SavingsFormScreen(
+      {super.key, this.savingType, this.savingName, this.googleRedirect});
 
   @override
   ConsumerState<SavingsFormScreen> createState() => _SavingsFormScreenState();
 }
 
 class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
+  String? name;
+  String? description;
+  String? targetAmount;
+  String? coinType;
+  String normalAddress = StorageManager.getAddress();
+
   DateTime? selectedDate;
   String truncatedAddress =
       AppLogic().truncateString(StorageManager.getAddress()) ?? "";
 
   final formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.googleRedirect == 'true') {
+      print(widget.googleRedirect);
+      submitForm();
+    }
+  }
 
   Future _selectDate() async {
     DateTime? picked = await showDatePicker(
@@ -33,6 +52,43 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
     });
   }
 
+  submitForm() async {
+    if (widget.googleRedirect == 'true') {
+      print('From submit form');
+      print(widget.googleRedirect);
+      var targetObject = {
+        "date": ref.read(selectedDateProvider)!.microsecondsSinceEpoch,
+        "amount": ref.read(targetAmountProvider),
+      };
+      await AppLogic().warmUpForTransaction(ref, context);
+      await AppLogic().signTransactions(
+          ref.read(coinTypeProvider),
+          ref.read(nameProvider),
+          ref.read(descriptionProvider),
+          ref.read(addressProvider),
+          targetObject,
+          ref);
+    } else {
+      Future(() {
+        ref.read(zkloginProcessStatusProvider.notifier).state =
+            'Buckle up for the ride';
+      });
+      print('From the beginning form');
+      ref.read(nameProvider.notifier).state = name ?? '';
+      ref.read(descriptionProvider.notifier).state = description ?? '';
+      ref.read(targetAmountProvider.notifier).state = targetAmount ?? '';
+      ref.read(coinTypeProvider.notifier).state = coinType ?? '';
+      ref.read(selectedDateProvider.notifier).state = selectedDate;
+      var targetObject = {
+        "date": selectedDate!.microsecondsSinceEpoch,
+        "amount": targetAmount,
+      };
+      await AppLogic().warmUpForTransaction(ref, context);
+      await AppLogic().signTransactions(
+          coinType, name, description, normalAddress, targetObject, ref);
+    }
+  }
+
   Widget form() {
     return Form(
       key: formKey,
@@ -40,6 +96,13 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
         padding: const EdgeInsets.all(15.0),
         child: ListView(
           children: [
+            Text(
+              ref.watch(zkloginProcessStatusProvider),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -54,12 +117,17 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
             TextFormField(
               decoration: const InputDecoration(
                 hintText: "Name",
-                border: UnderlineInputBorder(
+                border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(10.0),
                   ),
                 ),
               ),
+              onChanged: (value) {
+                setState(() {
+                  name = value;
+                });
+              },
               validator: (value) {
                 if (value!.trim().isEmpty) {
                   return "Name Required";
@@ -73,12 +141,17 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
             TextFormField(
               decoration: const InputDecoration(
                 hintText: "Description",
-                border: UnderlineInputBorder(
+                border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(10.0),
                   ),
                 ),
               ),
+              onChanged: (value) {
+                setState(() {
+                  description = value;
+                });
+              },
               validator: (value) {
                 if (value!.trim().isEmpty) {
                   return "Description Required";
@@ -92,7 +165,7 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Save Now",
+                "Target Details",
                 style: AppTheme.heading2Text,
                 textAlign: TextAlign.left,
               ),
@@ -101,9 +174,10 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
               height: 30.0,
             ),
             TextFormField(
-              decoration: const InputDecoration(
-                hintText: "Select Date",
-                border: UnderlineInputBorder(
+              decoration: InputDecoration(
+                hintText:
+                    selectedDate != null ? '$selectedDate' : "Select Date",
+                border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(10.0),
                   ),
@@ -116,6 +190,9 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
                 await _selectDate();
               },
             ),
+            const SizedBox(
+              height: 10.0,
+            ),
             TextFormField(
               keyboardType: const TextInputType.numberWithOptions(
                 signed: false,
@@ -123,12 +200,17 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
               ),
               decoration: const InputDecoration(
                 hintText: "Target Amount",
-                border: UnderlineInputBorder(
+                border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(10.0),
                   ),
                 ),
               ),
+              onChanged: (value) {
+                setState(() {
+                  targetAmount = value;
+                });
+              },
               validator: (value) {
                 if (value!.trim().isEmpty) {
                   return "Target amount Required";
@@ -151,15 +233,27 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
               height: 30.0,
             ),
             DropdownButtonFormField(
+              hint: const Text("Select coin type"),
               decoration: const InputDecoration(
-                hintText: "Select Coin Type",
-                border: UnderlineInputBorder(
+                // hintText: "Select Coin Type",
+                border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(10.0),
                   ),
                 ),
               ),
-              onChanged: (vaue) {},
+              validator: (value) {
+                if (value!.trim().isEmpty) {
+                  return "Coin Type Required";
+                }
+                return null;
+              },
+              onChanged: (value) {
+                print(value);
+                setState(() {
+                  coinType = value;
+                });
+              },
               items: [
                 DropdownMenuItem(
                   value: CoinType.SUI,
@@ -179,13 +273,15 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
                 ),
               ],
             ),
+            const SizedBox(
+              height: 10.0,
+            ),
             truncatedAddress != ""
                 ? TextFormField(
                     decoration: InputDecoration(
                       enabled: false,
-                      hintText: AppLogic()
-                          .truncateString(StorageManager.getAddress()),
-                      border: const UnderlineInputBorder(
+                      hintText: truncatedAddress,
+                      border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(
                           Radius.circular(10.0),
                         ),
@@ -200,9 +296,9 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
                   )
                 : Container(),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (formKey.currentState!.validate()) {
-                  print("The form is valid");
+                  await submitForm();
                 }
               },
               child: const Text("Submit"),
@@ -222,7 +318,22 @@ class _SavingsFormScreenState extends ConsumerState<SavingsFormScreen> {
         centerTitle: true,
         title: Text(widget.savingName ?? ""),
       ),
-      body: form(),
+      body: widget.googleRedirect == 'true'
+          ? Center(
+              child: Column(
+                children: [
+                  Text(
+                    ref.watch(zkloginProcessStatusProvider),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 20.0,
+                  ),
+                  const CircularProgressIndicator(),
+                ],
+              ),
+            )
+          : form(),
     );
   }
 }
