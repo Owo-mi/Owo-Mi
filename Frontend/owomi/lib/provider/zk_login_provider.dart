@@ -12,7 +12,7 @@ import 'package:sui/sui.dart';
 import 'package:sui/types/faucet.dart';
 import 'package:zklogin/zklogin.dart';
 
-final suiClient = SuiClient(SuiUrls.devnet);
+final suiClient = SuiClient(SuiUrls.testnet);
 
 final suiAccountProvider = Provider<SuiAccount>((ref) {
   var keypair = StorageManager.getTemporaryCacheKeyPair();
@@ -74,6 +74,10 @@ final addressBalanceProvider = StateProvider<BigInt>((ref) {
 });
 
 final makingNetworkRequestProvider = StateProvider<bool>((ref) {
+  return false;
+});
+
+final recentlyRequestedEpochProvider = StateProvider<bool>((ref) {
   return false;
 });
 
