@@ -7,8 +7,11 @@ import 'package:owomi/data/constants.dart';
 import 'package:owomi/provider/zk_login_provider.dart';
 
 class GoogleSignInPage extends ConsumerStatefulWidget {
+  final String? transaction;
+
   const GoogleSignInPage({
     super.key,
+    this.transaction = "false",
   });
 
   @override
@@ -75,9 +78,23 @@ class _GoogleSignInPageState extends ConsumerState<GoogleSignInPage> {
                   print(temp);
                   ref.read(jwtProvider.notifier).state = temp;
                   ref.read(googleSignInCompleteProvider.notifier).state = true;
-                  context.go('/');
+                  ref.read(recentlyRequestedEpochProvider.notifier).state =
+                      true;
+                  if (widget.transaction == "true") {
+                    context.push("/savingsForm?googleRedirect=true");
+                    // Navigator.pop(context);
+                  } else {
+                    context.go('/');
+                  }
                 } else {
-                  context.go('/');
+                  ref.read(recentlyRequestedEpochProvider.notifier).state =
+                      true;
+                  if (widget.transaction == "true") {
+                    context.push("/savingsForm?googleRedirect=true");
+                    // Navigator.pop(context);
+                  } else {
+                    context.go('/');
+                  }
                 }
                 return NavigationActionPolicy.CANCEL;
               }
