@@ -503,7 +503,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                       ? Text(truncatedEmail)
                       : const Text("Couldn't Fetch Email"),
                   SizedBox(
-                    width: 200.0,
+                    width: 150.0,
                     child: ElevatedButton(
                       style: const ButtonStyle(
                         // iconSize: MaterialStatePropertyAll(13.0),
@@ -516,6 +516,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                       ),
                       onPressed: () {},
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           truncatedAddress != ""
                               ? Text(truncatedAddress)
