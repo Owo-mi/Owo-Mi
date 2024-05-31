@@ -50,6 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
   //   );
   // }
 
+  Widget nothingToSee() {
+    return const Center(
+      child: Text('Nothing to see here... yet'),
+    );
+  }
+
   Widget balances() {
     return SizedBox(
       height: 150,
@@ -311,19 +317,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget transactions() {
-    return Container(
-      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-      color: Colors.blue,
-      child: const Text('omo'),
-    );
+    return nothingToSee();
   }
 
   Widget tokens() {
-    return Container(
-      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-      color: Colors.red,
-      child: const Text('omo'),
-    );
+    return nothingToSee();
   }
 
   Widget buildBottomPageView() {
