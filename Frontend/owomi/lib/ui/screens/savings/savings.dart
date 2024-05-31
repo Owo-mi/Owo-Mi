@@ -132,12 +132,15 @@ class _SavingsScreenState extends State<SavingsScreen> {
           const SizedBox(
             height: 30,
           ),
-          const Text(
-            'Save your Tokens',
-            style: AppTheme.boldHeading3Text,
+          const Padding(
+            padding: EdgeInsets.only(left: 15.0),
+            child: Text(
+              'Save your Tokens',
+              style: AppTheme.boldHeading3Text,
+            ),
           ),
           const SizedBox(
-            height: 30,
+            height: 20,
           ),
           GridView.count(
             shrinkWrap: true,
