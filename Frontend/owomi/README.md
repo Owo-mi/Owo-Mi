@@ -1,16 +1,36 @@
-# owomi
-
-A new Flutter project.
-
+# Owó Mi
 ## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Prerequisites
+Flutter SDK
+```bash
+sdk: '>=3.3.1 <4.0.0'
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+### Clone the git repository
+
+```bash
+git clone https://github.com/Dozie2001/Owo-Mi.git
+```
+
+### Get into the Flutter Directory
+
+```bash
+cd Frontend/owomi
+```
+
+### Get the pub packages
+
+```bash
+flutter pub get
+```
+
+### Run the app
+
+```bash
+# Only optimized for Android at the moment
+flutter run
+```
