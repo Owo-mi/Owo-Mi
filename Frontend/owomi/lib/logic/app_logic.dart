@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:owomi/common_libs.dart';
@@ -11,8 +9,6 @@ import 'package:sui/sui.dart';
 import '../provider/zk_login_provider.dart';
 
 class AppLogic {
-  final suiClient = SuiClient(SuiUrls.devnet);
-
   warmUpForTransaction(WidgetRef ref, BuildContext context) async {
     Future(() {
       ref.read(zkloginProcessStatusProvider.notifier).state =
@@ -199,30 +195,22 @@ class AppLogic {
 
   signTransactions(String? coinType, String? name, String? description,
       String? address, Map? target, ref) async {
+    final account = ref.read(suiAccountProvider);
+    final suiClient = SuiClient(SuiUrls.devnet, account: account);
+
     var serialized =
         await regularSavings(coinType, name, description, address, target);
 
-    // SuiClient.
-
-    var txb2 = SuiTransactionBlock.fromJson(jsonDecode(serialized));
-    print(txb2);
-    var txb1 = SuiTransactionBlock.fromJson(serialized);
-    print(txb1);
-    // print(jsonDecode(serialized));
-    var blockData = TransactionBlockDataBuilder.restore(
-      jsonDecode(serialized),
-    );
-    final txb = TransactionBlock();
-    blockData.sender = address;
-    blockData.gasConfig.owner = address;
+    final txb = TransactionBlock.from(serialized);
+    txb.setSender(address!);
     // var res = await suiClient.s
     print('from sign transaction function');
-    print(blockData);
-    final account = ref.read(suiAccountProvider);
-    // final result =
-    //     await suiClient.signAndExecuteTransactionBlock(account, blockData);
-    // print(result);
-    // print(result.digest);
+    var txBytes = await txb.build(BuildOptions(client: suiClient));
+    final result =
+        await suiClient.signAndExecuteTransaction(transaction: txBytes);
+    print(result);
+    print(result.digest);
+    print(result.confirmedLocalExecution);
   }
 
   truncateString(String input) {

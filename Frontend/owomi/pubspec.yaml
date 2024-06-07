@@ -48,6 +48,7 @@ dependencies:
   shared_preferences: ^2.2.3
   flutter_inappwebview: ^6.0.0
   backdrop: ^0.9.1
+  bcs: ^0.0.6
 
 dev_dependencies:
   flutter_test:
