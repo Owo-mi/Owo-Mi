@@ -26,7 +26,13 @@ Owó Mi is revolutionizing the crypto savings space by providing a solution that
   - TypeScript is used for its strong typing and scalability in the backend services, ensuring maintainable and efficient code.
   - Node.js runtime for asynchronous operations and server-side logic.
 
-### Blockchain
+### Blockchain:
+- **Base:**
+   - A bridge is being made to bring Owó Mi’s to 
+     Ethereum using Base, an L2 chain on an EVM 
+    compatible chain that offers secure and gasless 
+    transactions.
+
 - **Sui Move:**
   - The core of Owó Mi’s smart contracts, leveraging Sui Move for secure and efficient on-chain operations.
   - Sui Move’s features for transaction processing, asset management, and programmable logic.
@@ -37,7 +43,6 @@ Owó Mi is revolutionizing the crypto savings space by providing a solution that
   - Microservices architecture to manage different aspects of the platform, ensuring modularity and scalability.
 
 ## Security Features:
-- **zkLogin Authentication:** Use zero-knowledge proofs for enhanced login security.
 - **Biometric Authentication or PIN:** Choose your preferred secure login method.
 - **Data Encryption:**
   - All user data, including personal information and transaction details, is encrypted both in transit and at rest using advanced encryption standards (AES-256).
