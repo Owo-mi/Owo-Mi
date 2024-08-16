@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
 
     // transfer the saving cap to the user
     transferCap(txb, {cap: savingCap, recipient: address})
-
+    console.log(txb.serialize())
     return res.json({status: "success", data: txb.serialize()})
 });
 
@@ -126,8 +126,9 @@ router.post("/:id/deposit", async (req, res) => {
         coin: depositCoin ?? primaryCoin,
         self: txb.object(req.params.id)
     })
+    console.log(txb)
 
-    return res.json({status: "success", data: txb.serialize()})
+    return res.json({status: "success", data: txb})
 })
 
 router.post("/:id/withdraw", (req, res) => {
